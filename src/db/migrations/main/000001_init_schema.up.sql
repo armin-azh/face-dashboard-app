@@ -19,6 +19,7 @@ CREATE TABLE "Person" (
 CREATE TABLE "EnrollmentSession" (
   "id" BIGSERIAL PRIMARY KEY,
   "prime" varchar(255) UNIQUE NOT NULL,
+  "type" varchar(255) NOT NULL,
   "status" varchar(255) NOT NULL,
   "person_id" bigint NOT NULL,
   "created_at" timestamptz DEFAULT (now())

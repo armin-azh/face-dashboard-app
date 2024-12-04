@@ -2,6 +2,8 @@ package api
 
 import (
 	"context"
+	"fmt"
+
 	"face.com/gateway/src/api/serializers"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/utils"
@@ -57,6 +59,7 @@ func (server *Server) createPerson(c *fiber.Ctx) error {
 }
 
 func (server *Server) getPersonEventList(c *fiber.Ctx) error {
+
 	return nil
 }
 
@@ -65,7 +68,25 @@ func (server *Server) getPersonFaceList(c *fiber.Ctx) error{
 }
 
 func (server *Server) createEnrollment(c *fiber.Ctx) error {
-	return nil
+	c.Accepts("application/json")
+	id := c.Params("id")
+
+	serializer := new(serializers.EnrollmentSerializer)
+	if err:=server.ValidatePayload(serializer, c); err != nil {
+		return err
+	}
+
+	person,err:=server.mainStore.GetPersonByPrime(context.Background(), id)
+	if err!=nil{
+		return handleSQLError(c, err)
+	}
+
+	enrollment, err := server.mainStore.CreateEnrollmentSession(context.Background(),utils.UUID(), serializer.Type,E_STATUS_CREATED, person.ID)
+	if err!=nil{
+		return handleSQLError(c, err)
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": fmt.Sprintf("New session has been created for %s person", person.Prime), "code": SUCCESS, "data": enrollment})
 }
 
 func (server *Server) getEnrollmentList(c *fiber.Ctx) error{

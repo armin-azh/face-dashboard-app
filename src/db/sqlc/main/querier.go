@@ -9,6 +9,7 @@ import (
 )
 
 type Querier interface {
+	CreateEnrollmentSession(ctx context.Context, prime string, type_ string, status string, personID int64) (EnrollmentSession, error)
 	CreatePerson(ctx context.Context, prime string, firstName string, lastName string) (Person, error)
 	GetEventByPrime(ctx context.Context, prime string) (GetEventByPrimeRow, error)
 	GetEventsList(ctx context.Context, limit int32, offset int32) ([]GetEventsListRow, error)

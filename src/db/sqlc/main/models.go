@@ -29,6 +29,7 @@ type Enrollment struct {
 type EnrollmentSession struct {
 	ID        int64              `json:"id"`
 	Prime     string             `json:"prime"`
+	Type      string             `json:"type"`
 	Status    string             `json:"status"`
 	PersonID  int64              `json:"person_id"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
