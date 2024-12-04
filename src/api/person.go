@@ -2,19 +2,42 @@ package api
 
 import (
 	"context"
-	"fmt"
-
 	"face.com/gateway/src/api/serializers"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/utils"
 )
 
 func (server *Server) getPersonList(c *fiber.Ctx) error {
-	return nil
+
+	params := struct {
+		Page     int32
+		PageSize int32
+	}{
+		Page:     1,
+		PageSize: 10,
+	}
+
+	if err := c.QueryParser(&params); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Failed to parse query parameters",
+		})
+	}
+
+	persons, err := server.mainStore.ListPerson(context.Background(), params.PageSize, (params.Page - 1)*params.PageSize)
+	if err!=nil{
+		return handleSQLError(c, err)
+	}
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"page": params.Page, "page_size": params.PageSize, "results": persons})
 }
 
 func (server *Server) getPersonByPrime(c *fiber.Ctx) error {
-	return nil
+	id := c.Params("id")
+
+	person, err := server.mainStore.GetPersonByPrime(context.Background(), id)
+	if err!=nil{
+		return handleSQLError(c, err)
+	}
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "person has been retrieved", "code": SUCCESS, "data": person})
 }
 
 func (server *Server) createPerson(c *fiber.Ctx) error {
@@ -27,7 +50,6 @@ func (server *Server) createPerson(c *fiber.Ctx) error {
 	person,err := server.mainStore.CreatePerson(context.Background(), utils.UUID(), serializer.FirstName, serializer.LastName)
 	
 	if err != nil {
-		fmt.Println(err)
 		return handleSQLError(c, err)
 	}
 
