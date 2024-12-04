@@ -63,6 +63,20 @@ func NewServer(mainStore sqlcmain.Store, config *common.Config, producer kafka_i
 	events.Get("", server.getEventList) // Get Events List
 	events.Get("/event/:id", server.getEventByPrime) // Get Event By Prime 
 
+	// Persons
+	persons := v1.Group("/persons")
+	persons.Get("", server.getPersonList) // Get Persons List
+	persons.Post("", server.createPerson) // Create new person
+	persons.Get("/person/:id", server.getPersonByPrime) // Get Person By Id
+	persons.Get("/person/:id/events", server.getPersonEventList) // Get Person Event List
+	persons.Get("/person/:id/faces", server.getPersonFaceList) // Get Person Face List
+	persons.Post("/person/:id/enrollments", server.createEnrollment) // Create New Enrollment
+	persons.Get("/person/:id/enrollments", server.getEnrollmentList) // Get Enrollment List
+
+	// Enrollments
+	enrollments := v1.Group("/enrollments")
+	enrollments.Get("/enrollment/:id",  server.getEnrollmentByPrime) // Get Enrollment By Prime
+	
 	server.app = app
 
 	server.validator = validator.New()
