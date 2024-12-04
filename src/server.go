@@ -13,6 +13,7 @@ import (
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/lib/pq"
+	"github.com/redis/go-redis/v9"
 
 	sqlcmain "face.com/gateway/src/db/sqlc/main"
 )
@@ -100,10 +101,18 @@ func main() {
 
 	log.Info("Database connection pool has been established successfully!")
 
+	// Connect to redis
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     config.RedisAddr,
+		Password: config.RedisPassword,
+		DB:       0,
+	})
+	log.Info("Redis database has been connected!")
+
 	mainStore := sqlcmain.NewStore(dbpool)
 
 	// Run the server
-	server := api.NewServer(mainStore, config, producer)
+	server := api.NewServer(mainStore, config, producer, rdb)
 	if err := server.Start(fmt.Sprintf("%s:%d", config.Host, config.Port)); err != nil {
 		log.Fatal("Cannot start server", err)
 	}

@@ -10,6 +10,10 @@ type Config struct {
 	KafkaBootStr string `mapstructure:"KAFKA_BOOTSTRAP_SERVER"`
 	MediaDir     string `mapstructure:"MEDIA_DIR"`
 
+	// Redis
+	RedisAddr string `mapstructure:"REDIS_ADDR"`
+	RedisPassword string `mapstructure:"REDIS_PASSWORD"`
+
 	// CORS
 	CorsAllowOrigins string `mapstructure:"CORS_ALLOW_ORIGINS"`
 

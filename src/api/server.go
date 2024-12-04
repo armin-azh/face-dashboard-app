@@ -5,10 +5,11 @@ import (
 	sqlcmain "face.com/gateway/src/db/sqlc/main"
 	kafka_interface "face.com/gateway/src/interface"
 	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/contrib/websocket"
+	"github.com/redis/go-redis/v9"
 )
 
 type Server struct {
@@ -16,15 +17,17 @@ type Server struct {
 	config    *common.Config
 	producer  kafka_interface.Producer
 	validator *validator.Validate
+	rdb       *redis.Client
 
 	mainStore sqlcmain.Store
 }
 
-func NewServer(mainStore sqlcmain.Store, config *common.Config, producer kafka_interface.Producer) *Server {
+func NewServer(mainStore sqlcmain.Store, config *common.Config, producer kafka_interface.Producer, rdb *redis.Client) *Server {
 	server := &Server{
 		config:    config,
 		producer:  producer,
 		mainStore: mainStore,
+		rdb: rdb,
 	}
 
 	app := fiber.New(fiber.Config{
@@ -46,8 +49,8 @@ func NewServer(mainStore sqlcmain.Store, config *common.Config, producer kafka_i
 	}))
 
 	// Websocket Connection
-	app.Use("/ws", func (c *fiber.Ctx) error  {
-		if websocket.IsWebSocketUpgrade(c){
+	app.Use("/ws", func(c *fiber.Ctx) error {
+		if websocket.IsWebSocketUpgrade(c) {
 			c.Locals("allowed", true)
 			return c.Next()
 		}
@@ -60,23 +63,23 @@ func NewServer(mainStore sqlcmain.Store, config *common.Config, producer kafka_i
 
 	// Events
 	events := v1.Group("/events")
-	events.Get("", server.getEventList) // Get Events List
-	events.Get("/event/:id", server.getEventByPrime) // Get Event By Prime 
+	events.Get("", server.getEventList)              // Get Events List
+	events.Get("/event/:id", server.getEventByPrime) // Get Event By Prime
 
 	// Persons
 	persons := v1.Group("/persons")
-	persons.Get("", server.getPersonList) // Get Persons List
-	persons.Post("", server.createPerson) // Create new person
-	persons.Get("/person/:id", server.getPersonByPrime) // Get Person By Id
-	persons.Get("/person/:id/events", server.getPersonEventList) // Get Person Event List
-	persons.Get("/person/:id/faces", server.getPersonFaceList) // Get Person Face List
+	persons.Get("", server.getPersonList)                            // Get Persons List
+	persons.Post("", server.createPerson)                            // Create new person
+	persons.Get("/person/:id", server.getPersonByPrime)              // Get Person By Id
+	persons.Get("/person/:id/events", server.getPersonEventList)     // Get Person Event List
+	persons.Get("/person/:id/faces", server.getPersonFaceList)       // Get Person Face List
 	persons.Post("/person/:id/enrollments", server.createEnrollment) // Create New Enrollment
 	persons.Get("/person/:id/enrollments", server.getEnrollmentList) // Get Enrollment List
 
 	// Enrollments
 	enrollments := v1.Group("/enrollments")
-	enrollments.Get("/enrollment/:id",  server.getEnrollmentByPrime) // Get Enrollment By Prime
-	
+	enrollments.Get("/enrollment/:id", server.getEnrollmentByPrime) // Get Enrollment By Prime
+
 	server.app = app
 
 	server.validator = validator.New()
