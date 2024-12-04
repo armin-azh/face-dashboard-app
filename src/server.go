@@ -7,8 +7,9 @@ import (
 	"os/signal"
 	"time"
 
+	"face.com/gateway/src/api"
 	"face.com/gateway/src/common"
-	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/lib/pq"
