@@ -29,3 +29,15 @@ func (server *Server) getEventList(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"page": params.Page, "page_size": params.PageSize, "results": events})
 }
+
+func (server *Server) getEventByPrime(c *fiber.Ctx) error {
+
+	id:=c.Params("id")
+
+	event, err := server.mainStore.GetEventByPrime(context.Background(), id)
+	if err != nil {
+		return handleSQLError(c, err)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message":"event has been retreived sucessfully", "code": SUCCESS, "data": event})
+}
