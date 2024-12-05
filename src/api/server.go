@@ -27,7 +27,7 @@ func NewServer(mainStore sqlcmain.Store, config *common.Config, producer kafka_i
 		config:    config,
 		producer:  producer,
 		mainStore: mainStore,
-		rdb: rdb,
+		rdb:       rdb,
 	}
 
 	app := fiber.New(fiber.Config{
@@ -68,18 +68,24 @@ func NewServer(mainStore sqlcmain.Store, config *common.Config, producer kafka_i
 
 	// Persons
 	persons := v1.Group("/persons")
-	persons.Get("", server.getPersonList)                            // Get Persons List
-	persons.Post("", server.createPerson)                            // Create new person
-	persons.Get("/person/:id", server.getPersonByPrime)              // Get Person By Id
-	persons.Get("/person/:id/events", server.getPersonEventList)     // Get Person Event List
-	persons.Get("/person/:id/faces", server.getPersonFaceList)       // Get Person Face List
-	persons.Post("/person/:id/enrollments", server.createEnrollment) // Create New Enrollment
+	persons.Get("", server.getPersonList)                                    // Get Persons List
+	persons.Post("", server.createPerson)                                    // Create new person
+	persons.Get("/person/:id", server.getPersonByPrime)                      // Get Person By Id
+	persons.Get("/person/:id/events", server.getPersonEventList)             // Get Person Event List
+	persons.Get("/person/:id/faces", server.getPersonFaceList)               // Get Person Face List
+	persons.Post("/person/:id/enrollments", server.createEnrollment)         // Create New Enrollment
 	persons.Get("/person/:id/enrollments", server.getEnrollmentListByPerson) // Get Enrollment List
 
 	// Enrollments
 	enrollments := v1.Group("/enrollments")
-	enrollments.Get("", server.getEnrollmentList) // Get Enrollment List
+	enrollments.Get("", server.getEnrollmentList)                   // Get Enrollment List
 	enrollments.Get("/enrollment/:id", server.getEnrollmentByPrime) // Get Enrollment By Prime
+
+	// Camera
+	cameras := v1.Group("/cameras")
+	cameras.Get("", server.getCameraList)               // Get Camera List
+	cameras.Get("/camera/:id", server.getCameraByPrime) // Get Camera by prime
+	cameras.Post("", server.createCamera)               // Create Camera by Prime
 
 	server.app = app
 
