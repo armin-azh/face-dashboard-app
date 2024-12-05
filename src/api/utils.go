@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 
@@ -16,6 +17,13 @@ func handleSQLError(c *fiber.Ctx, err error) error {
 		return &fiber.Error{
 			Code:    fiber.ErrBadRequest.Code,
 			Message: fmt.Sprintf("%v", err),
+		}
+	}
+	
+	if errors.Is(err, sql.ErrNoRows){
+		return &fiber.Error{
+			Code: fiber.ErrNotFound.Code,
+			Message: "no resource founded",
 		}
 	}
 	return &fiber.Error{

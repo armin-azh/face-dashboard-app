@@ -33,3 +33,93 @@ func (q *Queries) CreateEnrollmentSession(ctx context.Context, prime string, typ
 	)
 	return i, err
 }
+
+const getEnrollmentSessionByPrime = `-- name: GetEnrollmentSessionByPrime :one
+SELECT id, prime, type, status, person_id, created_at
+FROM "EnrollmentSession"
+WHERE prime = $1
+LIMIT 1
+`
+
+func (q *Queries) GetEnrollmentSessionByPrime(ctx context.Context, prime string) (EnrollmentSession, error) {
+	row := q.db.QueryRow(ctx, getEnrollmentSessionByPrime, prime)
+	var i EnrollmentSession
+	err := row.Scan(
+		&i.ID,
+		&i.Prime,
+		&i.Type,
+		&i.Status,
+		&i.PersonID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const listEnrollmentSession = `-- name: ListEnrollmentSession :many
+SELECT id, prime, type, status, person_id, created_at
+FROM "EnrollmentSession"
+ORDER BY id DESC
+LIMIT $1 OFFSET $2
+`
+
+func (q *Queries) ListEnrollmentSession(ctx context.Context, limit int32, offset int32) ([]EnrollmentSession, error) {
+	rows, err := q.db.Query(ctx, listEnrollmentSession, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []EnrollmentSession
+	for rows.Next() {
+		var i EnrollmentSession
+		if err := rows.Scan(
+			&i.ID,
+			&i.Prime,
+			&i.Type,
+			&i.Status,
+			&i.PersonID,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listEnrollmentSessionByPerson = `-- name: ListEnrollmentSessionByPerson :many
+SELECT id, prime, type, status, person_id, created_at
+FROM "EnrollmentSession"
+WHERE person_id = $1
+ORDER BY id DESC
+LIMIT $2 OFFSET $3
+`
+
+func (q *Queries) ListEnrollmentSessionByPerson(ctx context.Context, personID int64, limit int32, offset int32) ([]EnrollmentSession, error) {
+	rows, err := q.db.Query(ctx, listEnrollmentSessionByPerson, personID, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []EnrollmentSession
+	for rows.Next() {
+		var i EnrollmentSession
+		if err := rows.Scan(
+			&i.ID,
+			&i.Prime,
+			&i.Type,
+			&i.Status,
+			&i.PersonID,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

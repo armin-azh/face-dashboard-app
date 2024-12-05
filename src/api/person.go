@@ -89,7 +89,32 @@ func (server *Server) createEnrollment(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": fmt.Sprintf("New session has been created for %s person", person.Prime), "code": SUCCESS, "data": enrollment})
 }
 
-func (server *Server) getEnrollmentList(c *fiber.Ctx) error{
-	return nil
+func (server *Server) getEnrollmentListByPerson(c *fiber.Ctx) error{
+	id := c.Params("id")
+	params := struct {
+		Page     int32
+		PageSize int32
+	}{
+		Page:     1,
+		PageSize: 10,
+	}
+
+	if err := c.QueryParser(&params); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Failed to parse query parameters",
+		})
+	}
+
+	person, err := server.mainStore.GetPersonByPrime(context.Background(), id)
+	if err!=nil{
+		return handleSQLError(c, err)
+	}
+
+	enrollments, err := server.mainStore.ListEnrollmentSessionByPerson(context.Background(), person.ID, params.PageSize, (params.Page - 1)*params.PageSize)
+	if err!=nil{
+		return handleSQLError(c, err)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"page": params.Page, "page_size": params.PageSize, "results": enrollments})
 }
 
