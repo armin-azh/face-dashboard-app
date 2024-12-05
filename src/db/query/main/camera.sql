@@ -9,7 +9,7 @@ FROM "Camera"
 ORDER BY id DESC
 LIMIT $1 OFFSET $2;
 
--- name: getCameraByPrime :one
+-- name: GetCameraByPrime :one
 SELECT *
 FROM "Camera"
 WHERE prime = $1

@@ -36,6 +36,28 @@ func (q *Queries) CreateCamera(ctx context.Context, prime string, name string, t
 	return i, err
 }
 
+const getCameraByPrime = `-- name: GetCameraByPrime :one
+SELECT id, prime, name, type, url, on_demand, created_at
+FROM "Camera"
+WHERE prime = $1
+LIMIT 1
+`
+
+func (q *Queries) GetCameraByPrime(ctx context.Context, prime string) (Camera, error) {
+	row := q.db.QueryRow(ctx, getCameraByPrime, prime)
+	var i Camera
+	err := row.Scan(
+		&i.ID,
+		&i.Prime,
+		&i.Name,
+		&i.Type,
+		&i.Url,
+		&i.OnDemand,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const listCameras = `-- name: ListCameras :many
 SELECT id, prime, name, type, url, on_demand, created_at 
 FROM "Camera"
@@ -69,26 +91,4 @@ func (q *Queries) ListCameras(ctx context.Context, limit int32, offset int32) ([
 		return nil, err
 	}
 	return items, nil
-}
-
-const getCameraByPrime = `-- name: getCameraByPrime :one
-SELECT id, prime, name, type, url, on_demand, created_at
-FROM "Camera"
-WHERE prime = $1
-LIMIT 1
-`
-
-func (q *Queries) getCameraByPrime(ctx context.Context, prime string) (Camera, error) {
-	row := q.db.QueryRow(ctx, getCameraByPrime, prime)
-	var i Camera
-	err := row.Scan(
-		&i.ID,
-		&i.Prime,
-		&i.Name,
-		&i.Type,
-		&i.Url,
-		&i.OnDemand,
-		&i.CreatedAt,
-	)
-	return i, err
 }
