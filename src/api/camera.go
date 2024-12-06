@@ -22,8 +22,48 @@ type Channels struct {
 }
 
 type RTSP struct {
-	Name string `json:"name"`
+	Name     string `json:"name"`
 	Channels map[string]Channels
+}
+
+
+func (server *Server) deleteCamera(c *fiber.Ctx) error{
+	id := c.Params("id")
+
+	url := fmt.Sprintf("%s/stream/%s/delete", server.config.Rtsp2Web, id)
+
+	// Make the POST request
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Fatalf("Error making Get request: %v", err)
+		return c.Status(fiber.StatusGone).JSON(fiber.Map{"message": "Cannot communicate with the ser ver", "code": FAILED})
+	}
+
+	if resp.StatusCode == 200 {
+
+		return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": fmt.Sprintf("Camera %s has been reloaded", id), "code": SUCCESS})
+	}
+	log.Errorf("Camera %s cannot be reloaded", id)
+	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": fmt.Sprintf("Camera %s cannot be reloaded", id), "code": FAILED})
+}
+
+func (server *Server) reloadCamera(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	url := fmt.Sprintf("%s/stream/%s/reload", server.config.Rtsp2Web, id)
+
+	// Make the POST request
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Fatalf("Error making POST request: %v", err)
+	}
+
+	if resp.StatusCode == 200 {
+
+		return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": fmt.Sprintf("Camera %s has been reloaded", id), "code": SUCCESS})
+	}
+	log.Errorf("Camera %s cannot be reloaded", id)
+	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": fmt.Sprintf("Camera %s cannot be reloaded", id), "code": FAILED})
 }
 
 func (server *Server) createCamera(c *fiber.Ctx) error {
@@ -45,11 +85,11 @@ func (server *Server) createCamera(c *fiber.Ctx) error {
 		Name: camera.Name,
 		Channels: map[string]Channels{
 			"0": {
-				Name: "ch1",
-				URL: camera.Url,
+				Name:     "ch1",
+				URL:      camera.Url,
 				OnDemand: camera.OnDemand,
-				Debug: false,
-				Status: 0,
+				Debug:    false,
+				Status:   0,
 			},
 		},
 	}
@@ -65,8 +105,6 @@ func (server *Server) createCamera(c *fiber.Ctx) error {
 	if err != nil {
 		log.Fatalf("Error making POST request: %v", err)
 	}
-	defer resp.Body.Close()
-
 	defer resp.Body.Close()
 
 	if resp.StatusCode == 200 {

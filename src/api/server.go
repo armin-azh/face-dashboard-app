@@ -83,9 +83,11 @@ func NewServer(mainStore sqlcmain.Store, config *common.Config, producer kafka_i
 
 	// Camera
 	cameras := v1.Group("/cameras")
-	cameras.Get("", server.getCameraList)               // Get Camera List
-	cameras.Get("/camera/:id", server.getCameraByPrime) // Get Camera by prime
-	cameras.Post("", server.createCamera)               // Create Camera by Prime
+	cameras.Get("", server.getCameraList)                  // Get Camera List
+	cameras.Get("/camera/:id", server.getCameraByPrime)    // Get Camera by prime
+	cameras.Get("/camera/:id/reload", server.reloadCamera) // Reload camera
+	cameras.Delete("/camera/:id", server.deleteCamera)     // Delete camera
+	cameras.Post("", server.createCamera)                  // Create Camera by Prime
 
 	server.app = app
 
