@@ -30,6 +30,11 @@ type RTSP struct {
 func (server *Server) deleteCamera(c *fiber.Ctx) error{
 	id := c.Params("id")
 
+	err := server.mainStore.DeleteCameraByPrime(context.Background(), id)
+	if err!=nil{
+		return handleSQLError(c, err)
+	}
+
 	url := fmt.Sprintf("%s/stream/%s/delete", server.config.Rtsp2Web, id)
 
 	// Make the POST request

@@ -12,6 +12,7 @@ type Querier interface {
 	CreateCamera(ctx context.Context, prime string, name string, type_ string, url string, onDemand bool) (Camera, error)
 	CreateEnrollmentSession(ctx context.Context, prime string, type_ string, status string, personID int64) (EnrollmentSession, error)
 	CreatePerson(ctx context.Context, prime string, firstName string, lastName string) (Person, error)
+	DeleteCameraByPrime(ctx context.Context, prime string) error
 	GetCameraByPrime(ctx context.Context, prime string) (Camera, error)
 	GetEnrollmentSessionByPrime(ctx context.Context, prime string) (EnrollmentSession, error)
 	GetEventByPrime(ctx context.Context, prime string) (GetEventByPrimeRow, error)

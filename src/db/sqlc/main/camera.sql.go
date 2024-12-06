@@ -36,6 +36,16 @@ func (q *Queries) CreateCamera(ctx context.Context, prime string, name string, t
 	return i, err
 }
 
+const deleteCameraByPrime = `-- name: DeleteCameraByPrime :exec
+DELETE FROM "Camera"
+WHERE prime = $1
+`
+
+func (q *Queries) DeleteCameraByPrime(ctx context.Context, prime string) error {
+	_, err := q.db.Exec(ctx, deleteCameraByPrime, prime)
+	return err
+}
+
 const getCameraByPrime = `-- name: GetCameraByPrime :one
 SELECT id, prime, name, type, url, on_demand, created_at
 FROM "Camera"

@@ -14,3 +14,7 @@ SELECT *
 FROM "Camera"
 WHERE prime = $1
 LIMIT 1;
+
+-- name: DeleteCameraByPrime :exec
+DELETE FROM "Camera"
+WHERE prime = $1;
