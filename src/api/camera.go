@@ -41,15 +41,14 @@ func (server *Server) deleteCamera(c *fiber.Ctx) error{
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Fatalf("Error making Get request: %v", err)
-		return c.Status(fiber.StatusGone).JSON(fiber.Map{"message": "Cannot communicate with the ser ver", "code": FAILED})
+		return c.Status(fiber.StatusGone).JSON(fiber.Map{"message": "Cannot communicate with the server", "code": FAILED})
 	}
 
 	if resp.StatusCode == 200 {
-
-		return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": fmt.Sprintf("Camera %s has been reloaded", id), "code": SUCCESS})
+		return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": fmt.Sprintf("Camera %s has been deleted", id), "code": SUCCESS})
 	}
 	log.Errorf("Camera %s cannot be reloaded", id)
-	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": fmt.Sprintf("Camera %s cannot be reloaded", id), "code": FAILED})
+	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": fmt.Sprintf("Camera %s cannot be deleted", id), "code": FAILED})
 }
 
 func (server *Server) reloadCamera(c *fiber.Ctx) error {
@@ -83,7 +82,6 @@ func (server *Server) createCamera(c *fiber.Ctx) error {
 		return handleSQLError(c, err)
 	}
 
-	// TODO: Send through rtsp2web server
 	url := fmt.Sprintf("%s/stream/%s,/add", server.config.Rtsp2Web, camera.Prime)
 
 	data := RTSP{
@@ -113,6 +111,8 @@ func (server *Server) createCamera(c *fiber.Ctx) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode == 200 {
+
+		server.rdb.LPush(context.Background(), "active-streams", camera.Prime)
 
 		return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "New camera has been created", "code": SUCCESS, "data": camera})
 	}
