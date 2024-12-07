@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"sync"
 
-	// sqlcmain "face.com/gateway/src/db/sqlc/main"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
@@ -226,36 +225,19 @@ func (server *Server) uploadVideo(c *fiber.Ctx) error {
 	full_path := path.Join(server.config.MediaDir, relative_path)
 
 	err = os.MkdirAll(filepath.Dir(full_path), 0755)
-	if err != nil{
+	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Cannot create subdirectory", "code": InternalFailure})
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "new file has been stored", "code": SUCCESS})
 }
 
-
 func (server *Server) uploadImages(c *fiber.Ctx) error {
-	// id := c.Params("id")
+	id := c.Params("id")
 
-	// enrollment,err := server.mainStore.GetEnrollmentSessionByPrime(context.Background(),id)
-	// if err != nil {
-	// 	return handleSQLError(c, err)
-	// }
-
-	// form, err := c.MultipartForm()
-	// if err != nil{
-	// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-	// 		"message": "No image files were provided",
-	// 		"code": FAILED,
-	// 	})
-	// }
-
-	// files:= form.File["images"]
-	// if len(files) == 0 {
-	// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-	// 		"error": "No image files were provided",
-	// 	})
-	// }
-
+	_, err := server.mainStore.GetEnrollmentSessionByPrime(context.Background(), id)
+	if err != nil {
+		return handleSQLError(c, err)
+	}
 	return nil
 }
