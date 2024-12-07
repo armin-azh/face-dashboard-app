@@ -4,7 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
+	"path"
+	"path/filepath"
 	"sync"
 
 	"github.com/gofiber/contrib/websocket"
@@ -149,18 +152,18 @@ func (server *Server) recordingEnrollment(c *fiber.Ctx) error {
 		// Send start recording
 		response := EnrollmentMessageResponse{
 			Message: fmt.Sprintf("Enrollment %s recording is now starting", id),
-			Action: E_ACTION_START_RECORDING,
+			Action:  E_ACTION_START_RECORDING,
 		}
 
 		data, err := json.Marshal(response)
-		if err != nil{
+		if err != nil {
 			log.Errorf("Error marshaling data %s", err.Error())
 			return
 		}
 
-		for client := range enrollmentWsClients{
+		for client := range enrollmentWsClients {
 			err = client.WriteMessage(websocket.TextMessage, data)
-			if err != nil{
+			if err != nil {
 				log.Errorf("Error sending data: %s", err.Error())
 				client.Close()
 				delete(enrollmentWsClients, client)
@@ -186,14 +189,14 @@ func (server *Server) recordingEnrollment(c *fiber.Ctx) error {
 		// Send end recording status
 
 		data, err = json.Marshal(response)
-		if err != nil{
+		if err != nil {
 			log.Errorf("Error marshaling data %s", err.Error())
 			return
 		}
 
-		for client := range enrollmentWsClients{
+		for client := range enrollmentWsClients {
 			err = client.WriteMessage(websocket.TextMessage, data)
-			if err != nil{
+			if err != nil {
 				log.Errorf("Error sending data: %s", err.Error())
 				client.Close()
 				delete(enrollmentWsClients, client)
@@ -203,4 +206,40 @@ func (server *Server) recordingEnrollment(c *fiber.Ctx) error {
 	}()
 
 	return c.Status(fiber.StatusAccepted).JSON(fiber.Map{"message": "start recording", "code": SUCCESS})
+}
+
+func (server *Server) uploadVideo(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	enrollment, err := server.mainStore.GetEnrollmentSessionByPrime(context.Background(), id)
+	if err != nil {
+		return handleSQLError(c, err)
+	}
+
+	file, err := c.FormFile("video")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "No file uploaded", "code": NoFile})
+	}
+
+	relative_path := fmt.Sprintf("/%s/assets/%s", enrollment.Prime, file.Filename)
+	full_path := path.Join(server.config.MediaDir, relative_path)
+
+	err = os.MkdirAll(filepath.Dir(full_path), 0755)
+	if err != nil{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Cannot create subdirectory", "code": InternalFailure})
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "new file has been stored", "code": SUCCESS})
+}
+
+
+func (server *Server) uploadImages(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	enrollment,err := server.mainStore.GetEnrollmentSessionByPrime(context.Background(),id)
+	if err != nil {
+		return handleSQLError(c, err)
+	}
+
+
 }

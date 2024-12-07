@@ -83,6 +83,9 @@ func NewServer(mainStore sqlcmain.Store, config *common.Config, producer kafka_i
 	enrollments.Get("", server.getEnrollmentList)                   // Get Enrollment List
 	enrollments.Get("/enrollment/:id", server.getEnrollmentByPrime) // Get Enrollment By Prime
 	enrollments.Get("/enrollment/:id/recording", server.recordingEnrollment) // Start recording
+	enrollments.Post("/enrollment/:id/video", server.uploadVideo) // Upload video
+	enrollments.Post("/enrollment/:id/images", server.uploadImages) // Upload images
+
 	// Camera
 	cameras := v1.Group("/cameras")
 	cameras.Post("", server.createCamera)                  // Create Camera by Prime
