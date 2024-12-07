@@ -241,5 +241,16 @@ func (server *Server) uploadImages(c *fiber.Ctx) error {
 		return handleSQLError(c, err)
 	}
 
+	form, err := c.MultipartForm()
+	if err != nil{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "No image files were provided",
+			"code": FAILED,
+		})
+	}
 
+	
+
+
+	return nil
 }

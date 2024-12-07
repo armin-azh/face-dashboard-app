@@ -25,6 +25,14 @@ CREATE TABLE "EnrollmentSession" (
   "created_at" timestamptz DEFAULT (now())
 );
 
+CREATE TABLE "EnrollmentSessionFile" (
+  "id" BIGSERIAL PRIMARY KEY,
+  "session_id" bigint NOT NULL,
+  "prime" varchar(255) UNIQUE NOT NULL,
+  "path" varchar(1024) NOT NULL,
+  "created_at" timestamptz DEFAULT (now())
+);
+
 CREATE TABLE "Enrollment" (
   "id" BIGSERIAL PRIMARY KEY,
   "prime" varchar(255) UNIQUE NOT NULL,
@@ -54,6 +62,8 @@ CREATE TABLE "Event" (
 );
 
 ALTER TABLE "EnrollmentSession" ADD FOREIGN KEY ("person_id") REFERENCES "Person" ("id") ON DELETE CASCADE;
+
+ALTER TABLE "EnrollmentSessionFile" ADD FOREIGN KEY ("session_id") REFERENCES "EnrollmentSession" ("id") ON DELETE CASCADE;
 
 ALTER TABLE "Enrollment" ADD FOREIGN KEY ("face_id") REFERENCES "Face" ("id");
 
