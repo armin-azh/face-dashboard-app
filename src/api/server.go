@@ -57,6 +57,8 @@ func NewServer(mainStore sqlcmain.Store, config *common.Config, producer kafka_i
 		return fiber.ErrUpgradeRequired
 	})
 
+	app.Get("/ws/enrollments/enrollment/:id", websocket.New(server.enrollmentSocketGateway))
+
 	// Add Endpoints
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
