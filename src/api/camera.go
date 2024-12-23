@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	sqlcmain "face.com/gateway/src/db/sqlc/main"
 	"fmt"
+	"io"
 	"net/http"
 
 	"face.com/gateway/src/api/serializers"
@@ -102,7 +103,12 @@ func (server *Server) createCamera(c *fiber.Ctx) error {
 	if err != nil {
 		log.Fatalf("Error making POST request: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Fatalf("Error closing body: %v", err)
+		}
+	}(resp.Body)
 
 	if resp.StatusCode == 200 {
 
@@ -145,5 +151,5 @@ func (server *Server) getCameraByPrime(c *fiber.Ctx) error {
 		return handleSQLError(c, err)
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Camera has been retreived", "code": SUCCESS, "data": camera})
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Camera has been retrieved", "code": SUCCESS, "data": camera})
 }
