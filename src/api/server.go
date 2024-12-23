@@ -5,7 +5,6 @@ import (
 	sqlcmain "face.com/gateway/src/db/sqlc/main"
 	kafka_interface "face.com/gateway/src/interface"
 	"github.com/go-playground/validator/v10"
-	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -48,17 +47,6 @@ func NewServer(mainStore sqlcmain.Store, config *common.Config, producer kafka_i
 		TimeZone: config.TimeZone,
 	}))
 
-	// Websocket Connection
-	app.Use("/ws", func(c *fiber.Ctx) error {
-		if websocket.IsWebSocketUpgrade(c) {
-			c.Locals("allowed", true)
-			return c.Next()
-		}
-		return fiber.ErrUpgradeRequired
-	})
-
-	app.Get("/ws/enrollments/enrollment/:id", websocket.New(server.enrollmentSocketGateway))
-
 	// Add Endpoints
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
@@ -80,11 +68,12 @@ func NewServer(mainStore sqlcmain.Store, config *common.Config, producer kafka_i
 
 	// Enrollments
 	enrollments := v1.Group("/enrollments")
-	enrollments.Get("", server.getEnrollmentList)                   // Get Enrollment List
-	enrollments.Get("/enrollment/:id", server.getEnrollmentByPrime) // Get Enrollment By Prime
+	enrollments.Get("", server.getEnrollmentList)                            // Get Enrollment List
+	enrollments.Get("/enrollment/:id", server.getEnrollmentByPrime)          // Get Enrollment By Prime
+	enrollments.Get("/enrollment/:id/jwt", server.generateEnrollmentJWT)     // Get Enrollment By Prime
 	enrollments.Get("/enrollment/:id/recording", server.recordingEnrollment) // Start recording
-	enrollments.Post("/enrollment/:id/video", server.uploadVideo) // Upload video
-	enrollments.Post("/enrollment/:id/images", server.uploadImages) // Upload images
+	enrollments.Post("/enrollment/:id/video", server.uploadVideo)            // Upload video
+	enrollments.Post("/enrollment/:id/images", server.uploadImages)          // Upload images
 
 	// Camera
 	cameras := v1.Group("/cameras")
@@ -93,7 +82,7 @@ func NewServer(mainStore sqlcmain.Store, config *common.Config, producer kafka_i
 	cameras.Get("/camera/:id", server.getCameraByPrime)    // Get Camera by prime
 	cameras.Get("/camera/:id/reload", server.reloadCamera) // Reload camera
 	cameras.Delete("/camera/:id", server.deleteCamera)     // Delete camera
-	
+
 	server.app = app
 
 	server.validator = validator.New()

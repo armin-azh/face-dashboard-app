@@ -14,6 +14,7 @@ type Config struct {
 	CorsAllowOrigins string `mapstructure:"CORS_ALLOW_ORIGINS"`
 	TimeZone         string `mapstructure:"Time_Zone"`
 	Rtsp2Web         string `mapstructure:"RTSP_2_WEB_ADDR"`
+	JwtSecret        string `mapstructure:"JWT_SECRET"`
 }
 
 func LoadConfig(path string) (*Config, error) {
