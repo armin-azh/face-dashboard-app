@@ -58,7 +58,7 @@ func (server *Server) reloadCamera(c *fiber.Ctx) error {
 
 	if resp.StatusCode == 200 {
 
-		return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": fmt.Sprintf("Camera %s has been reloaded", id), "code": SUCCESS})
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": fmt.Sprintf("Camera %s has been reloaded", id), "code": SUCCESS})
 	}
 	log.Errorf("Camera %s cannot be reloaded", id)
 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": fmt.Sprintf("Camera %s cannot be reloaded", id), "code": FAILED})
