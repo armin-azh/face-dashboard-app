@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	sqlcmain "face.com/gateway/src/db/sqlc/main"
 	"fmt"
 	"net/http"
 
@@ -26,29 +27,22 @@ type RTSP struct {
 	Channels map[string]Channels
 }
 
+func (server *Server) deleteCamera(c *fiber.Ctx) error {
 
-func (server *Server) deleteCamera(c *fiber.Ctx) error{
 	id := c.Params("id")
-
-	err := server.mainStore.DeleteCameraByPrime(context.Background(), id)
-	if err!=nil{
-		return handleSQLError(c, err)
-	}
 
 	url := fmt.Sprintf("%s/stream/%s/delete", server.config.Rtsp2Web, id)
 
-	// Make the POST request
-	resp, err := http.Get(url)
-	if err != nil {
-		log.Fatalf("Error making Get request: %v", err)
-		return c.Status(fiber.StatusGone).JSON(fiber.Map{"message": "Cannot communicate with the server", "code": FAILED})
+	arg := sqlcmain.DeleteCameraParams{
+		RTSP2WebURL: url,
+		Prime:       id,
 	}
 
-	if resp.StatusCode == 200 {
-		return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": fmt.Sprintf("Camera %s has been deleted", id), "code": SUCCESS})
+	err := server.mainStore.DeleteCamera(context.Background(), arg)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": fmt.Sprintf("Camera %s cannot be deleted because %v", id, err), "code": FAILED})
 	}
-	log.Errorf("Camera %s cannot be reloaded", id)
-	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": fmt.Sprintf("Camera %s cannot be deleted", id), "code": FAILED})
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": fmt.Sprintf("Camera %s has been deleted successfully", id), "code": SUCCESS})
 }
 
 func (server *Server) reloadCamera(c *fiber.Ctx) error {
@@ -82,7 +76,7 @@ func (server *Server) createCamera(c *fiber.Ctx) error {
 		return handleSQLError(c, err)
 	}
 
-	url := fmt.Sprintf("%s/stream/%s,/add", server.config.Rtsp2Web, camera.Prime)
+	url := fmt.Sprintf("%s/stream/%s/add", server.config.Rtsp2Web, camera.Prime)
 
 	data := RTSP{
 		Name: camera.Name,

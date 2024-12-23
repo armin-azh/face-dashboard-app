@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"sync"
 
+	// sqlcmain "face.com/gateway/src/db/sqlc/main"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
@@ -234,23 +235,27 @@ func (server *Server) uploadVideo(c *fiber.Ctx) error {
 
 
 func (server *Server) uploadImages(c *fiber.Ctx) error {
-	id := c.Params("id")
+	// id := c.Params("id")
 
-	enrollment,err := server.mainStore.GetEnrollmentSessionByPrime(context.Background(),id)
-	if err != nil {
-		return handleSQLError(c, err)
-	}
+	// enrollment,err := server.mainStore.GetEnrollmentSessionByPrime(context.Background(),id)
+	// if err != nil {
+	// 	return handleSQLError(c, err)
+	// }
 
-	form, err := c.MultipartForm()
-	if err != nil{
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "No image files were provided",
-			"code": FAILED,
-		})
-	}
+	// form, err := c.MultipartForm()
+	// if err != nil{
+	// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	// 		"message": "No image files were provided",
+	// 		"code": FAILED,
+	// 	})
+	// }
 
-	
-
+	// files:= form.File["images"]
+	// if len(files) == 0 {
+	// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	// 		"error": "No image files were provided",
+	// 	})
+	// }
 
 	return nil
 }

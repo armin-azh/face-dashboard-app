@@ -19,7 +19,7 @@ import (
 )
 
 func main() {
-	// Signal Intrupt
+	// Signal Interrupt
 	signalChat := make(chan os.Signal, 1)
 	signal.Notify(signalChat, os.Interrupt)
 

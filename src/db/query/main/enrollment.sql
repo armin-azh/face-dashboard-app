@@ -21,3 +21,5 @@ SELECT *
 FROM "EnrollmentSession"
 WHERE prime = $1
 LIMIT 1;
+
+-- name: CreateBulkEnrollment
