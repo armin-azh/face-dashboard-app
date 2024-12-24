@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"face.com/gateway/src/listener"
 	"fmt"
 	"os"
 	"os/signal"
@@ -110,6 +111,11 @@ func main() {
 	log.Info("Redis database has been connected!")
 
 	mainStore := sqlcmain.NewStore(dbpool)
+
+	// Establish listeners
+	go func() {
+		listener.ResultListener(config.KafkaBootStr)
+	}()
 
 	// Run the server
 	server := api.NewServer(mainStore, config, producer, rdb)
