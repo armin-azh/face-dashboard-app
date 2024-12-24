@@ -63,7 +63,7 @@ func NewServer(mainStore sqlcmain.Store, config *common.Config, producer kafka_i
 	persons.Get("/person/:id", server.getPersonByPrime)                      // Get Person By Id
 	persons.Get("/person/:id/events", server.getPersonEventList)             // Get Person Event List
 	persons.Get("/person/:id/faces", server.getPersonFaceList)               // Get Person Face List
-	persons.Post("/person/:id/enrollments", server.createEnrollment)         // Create New Enrollment
+	persons.Post("/person/:id/enrollments", server.vcreateEnrollment)        // Create New Enrollment
 	persons.Get("/person/:id/enrollments", server.getEnrollmentListByPerson) // Get Enrollment List
 
 	// Enrollments

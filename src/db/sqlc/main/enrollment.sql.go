@@ -9,6 +9,30 @@ import (
 	"context"
 )
 
+type CreateBulkEnrollmentFilesParams struct {
+	Prime     string `json:"prime"`
+	SessionID int64  `json:"session_id"`
+	Path      string `json:"path"`
+}
+
+const createEnrollmentFile = `-- name: CreateEnrollmentFile :one
+INSERT INTO "EnrollmentSessionFile" (prime, session_id, path)
+VALUES ($1, $2,$3) RETURNING id, session_id, prime, path, created_at
+`
+
+func (q *Queries) CreateEnrollmentFile(ctx context.Context, prime string, sessionID int64, path string) (EnrollmentSessionFile, error) {
+	row := q.db.QueryRow(ctx, createEnrollmentFile, prime, sessionID, path)
+	var i EnrollmentSessionFile
+	err := row.Scan(
+		&i.ID,
+		&i.SessionID,
+		&i.Prime,
+		&i.Path,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const createEnrollmentSession = `-- name: CreateEnrollmentSession :one
 INSERT INTO "EnrollmentSession" (prime, "type", "status", person_id) 
 VALUES ($1, $2, $3, $4) 
@@ -122,4 +146,15 @@ func (q *Queries) ListEnrollmentSessionByPerson(ctx context.Context, personID in
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateEnrollmentStatusByID = `-- name: UpdateEnrollmentStatusByID :exec
+UPDATE "EnrollmentSession"
+SET "status" = $2
+WHERE "id" = $1
+`
+
+func (q *Queries) UpdateEnrollmentStatusByID(ctx context.Context, iD int64, status string) error {
+	_, err := q.db.Exec(ctx, updateEnrollmentStatusByID, iD, status)
+	return err
 }

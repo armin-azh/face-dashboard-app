@@ -2,8 +2,10 @@ package api
 
 import (
 	"context"
+	sqlcmain "face.com/gateway/src/db/sqlc/main"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/utils"
 	"github.com/golang-jwt/jwt/v5"
 	"os"
 	"path"
@@ -163,7 +165,22 @@ func (server *Server) uploadVideo(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Cannot create subdirectory", "code": InternalFailure})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "new file has been stored", "code": SUCCESS})
+	// Save path on enrollment
+	fileParam := sqlcmain.TxEnrollmentFile{
+		Prime:      utils.UUID(),
+		SessionId:  enrollment.ID,
+		Path:       relative_path,
+		NextStatus: E_STATUS_STAGED,
+	}
+	enrollmentFile, err := server.mainStore.CreateEnrollmentFileTx(context.Background(), fileParam)
+
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error(), "code": InternalFailure})
+	}
+
+	// TODO: Send it through broker
+
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "new file has been stored", "code": SUCCESS, "data": enrollmentFile})
 }
 
 func (server *Server) uploadImages(c *fiber.Ctx) error {

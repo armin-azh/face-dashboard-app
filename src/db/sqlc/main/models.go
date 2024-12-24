@@ -35,6 +35,14 @@ type EnrollmentSession struct {
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
+type EnrollmentSessionFile struct {
+	ID        int64              `json:"id"`
+	SessionID int64              `json:"session_id"`
+	Prime     string             `json:"prime"`
+	Path      string             `json:"path"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+}
+
 type Event struct {
 	ID        int64              `json:"id"`
 	Prime     string             `json:"prime"`

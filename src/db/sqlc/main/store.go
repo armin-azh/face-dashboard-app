@@ -9,6 +9,7 @@ import (
 type Store interface {
 	Querier
 	DeleteCamera(ctx context.Context, arg DeleteCameraParams) error
+	CreateEnrollmentFileTx(ctx context.Context, arg TxEnrollmentFile) (*EnrollmentSessionFile, error)
 }
 
 // SQLStore provides all functions to execute db queries and transactions

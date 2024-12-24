@@ -22,4 +22,15 @@ FROM "EnrollmentSession"
 WHERE prime = $1
 LIMIT 1;
 
--- name: CreateBulkEnrollment
+-- name: CreateBulkEnrollmentFiles :copyfrom
+INSERT INTO "EnrollmentSessionFile" (prime, session_id, path)
+VALUES ($1, $2,$3);
+
+-- name: CreateEnrollmentFile :one
+INSERT INTO "EnrollmentSessionFile" (prime, session_id, path)
+VALUES ($1, $2,$3) RETURNING *;
+
+-- name: UpdateEnrollmentStatusByID :exec
+UPDATE "EnrollmentSession"
+SET "status" = $2
+WHERE "id" = $1;
