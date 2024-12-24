@@ -3,13 +3,18 @@ package api
 import (
 	"context"
 	sqlcmain "face.com/gateway/src/db/sqlc/main"
+	srv_proto "face.com/gateway/src/proto"
 	"fmt"
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/utils"
 	"github.com/golang-jwt/jwt/v5"
+	"google.golang.org/protobuf/proto"
 	"os"
 	"path"
 	"path/filepath"
+	"time"
 )
 
 type EnrollmentMessageResponse struct {
@@ -152,24 +157,49 @@ func (server *Server) uploadVideo(c *fiber.Ctx) error {
 		return handleSQLError(c, err)
 	}
 
+	if enrollment.Status != E_STATUS_CREATED {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "File has been uploaded before",
+			"code":    FAILED,
+		})
+	}
+
+	if enrollment.Type != E_TYPE_VIDEO {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "You cannot have permission to upload file to VIDEO",
+			"code":    FAILED,
+		})
+	}
+
 	file, err := c.FormFile("video")
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "No file uploaded", "code": NoFile})
 	}
 
-	relative_path := fmt.Sprintf("/%s/assets/%s", enrollment.Prime, file.Filename)
-	full_path := path.Join(server.config.MediaDir, relative_path)
+	// build full and relative path
+	relativePath := fmt.Sprintf("/%s/assets/%s", enrollment.Prime, file.Filename)
+	fullPath := path.Join(server.config.MediaDir, relativePath)
 
-	err = os.MkdirAll(filepath.Dir(full_path), 0755)
+	// Make directories
+	err = os.MkdirAll(filepath.Dir(fullPath), 0755)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Cannot create subdirectory", "code": InternalFailure})
+	}
+
+	// Save the uploaded file to the full path
+	err = c.SaveFile(file, fullPath)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to save file",
+			"code":    FileError,
+		})
 	}
 
 	// Save path on enrollment
 	fileParam := sqlcmain.TxEnrollmentFile{
 		Prime:      utils.UUID(),
 		SessionId:  enrollment.ID,
-		Path:       relative_path,
+		Path:       relativePath,
 		NextStatus: E_STATUS_STAGED,
 	}
 	enrollmentFile, err := server.mainStore.CreateEnrollmentFileTx(context.Background(), fileParam)
@@ -177,8 +207,6 @@ func (server *Server) uploadVideo(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error(), "code": InternalFailure})
 	}
-
-	// TODO: Send it through broker
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "new file has been stored", "code": SUCCESS, "data": enrollmentFile})
 }
@@ -200,4 +228,96 @@ func (server *Server) uploadImages(c *fiber.Ctx) error {
 	//}
 	//
 	return nil
+}
+
+func (server *Server) doProcess(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	enrollment, err := server.mainStore.GetEnrollmentSessionByPrime(context.Background(), id)
+	if err != nil {
+		return handleSQLError(c, err)
+	}
+
+	enroll := &srv_proto.Enrollment{
+		SessionId: enrollment.Prime,
+		Type:      srv_proto.Type_Video,
+	}
+
+	if enrollment.Status != E_STATUS_STAGED {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "You cannot process this session", "code": InvalidOperation})
+	}
+
+	if enrollment.Type == E_TYPE_VIDEO || enrollment.Type == E_TYPE_RECORDING {
+
+		file, err := server.mainStore.GetEnrollmentVideo(context.Background(), enrollment.ID)
+
+		if err != nil {
+			return handleSQLError(c, err)
+		}
+		enroll.VideoPath = file.Path
+
+	} else if enrollment.Type == E_TYPE_IMAGE {
+
+		files, err := server.mainStore.ListEnrollmentImage(context.Background(), enrollment.ID)
+		if err != nil {
+			return handleSQLError(c, err)
+		}
+
+		var imageFiles []*srv_proto.ImageFile
+
+		for _, file := range files {
+			imageFile := &srv_proto.ImageFile{Path: file.Path}
+
+			imageFiles = append(imageFiles, imageFile)
+		}
+
+		enroll.Images = imageFiles
+	} else {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Invalid file type", "code": InvalidOperation})
+	}
+
+	// Send it through broker
+
+	deliveryChan := make(chan kafka.Event, 1)
+
+	payload, err := proto.Marshal(enroll)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "cannot encode the proto data"})
+	}
+
+	qName := "com.enrollment.0"
+
+	go func() {
+		if err := server.producer.Produce(&kafka.Message{TopicPartition: kafka.TopicPartition{Topic: &qName, Partition: kafka.PartitionAny}, Value: payload}, deliveryChan); err != nil {
+			log.Info(err.Error())
+		}
+		server.producer.Flush(15 * 1000)
+	}()
+
+	select {
+	case e := <-deliveryChan:
+		m := e.(*kafka.Message)
+		if m.TopicPartition.Error != nil {
+			log.Errorf("Delivery failed: %v\n", m.TopicPartition.Error)
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Failed to send message to Kafka",
+				"code":    DeliveryFailure,
+			})
+		}
+
+		log.Debugf("Delivered message to Kafka: %v\n", string(m.Value))
+
+		err = server.mainStore.UpdateEnrollmentStatusByID(context.Background(), enrollment.ID, E_STATUS_PROCESSING)
+
+		if err != nil {
+			return handleSQLError(c, err)
+		}
+
+	case <-time.After(10 * time.Second):
+		err = c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Kafka delivery report timed out", "code": KafkaTimeout})
+	}
+
+	close(deliveryChan) // Ensure the channel is closed
+
+	return err
 }

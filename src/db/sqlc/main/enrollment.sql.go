@@ -79,6 +79,58 @@ func (q *Queries) GetEnrollmentSessionByPrime(ctx context.Context, prime string)
 	return i, err
 }
 
+const getEnrollmentVideo = `-- name: GetEnrollmentVideo :one
+SELECT id, session_id, prime, path, created_at
+FROM "EnrollmentSessionFile"
+WHERE session_id = $1
+LIMIT 1
+`
+
+func (q *Queries) GetEnrollmentVideo(ctx context.Context, sessionID int64) (EnrollmentSessionFile, error) {
+	row := q.db.QueryRow(ctx, getEnrollmentVideo, sessionID)
+	var i EnrollmentSessionFile
+	err := row.Scan(
+		&i.ID,
+		&i.SessionID,
+		&i.Prime,
+		&i.Path,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const listEnrollmentImage = `-- name: ListEnrollmentImage :many
+SELECT id, session_id, prime, path, created_at
+FROM "EnrollmentSessionFile"
+WHERE session_id = $1
+`
+
+func (q *Queries) ListEnrollmentImage(ctx context.Context, sessionID int64) ([]EnrollmentSessionFile, error) {
+	rows, err := q.db.Query(ctx, listEnrollmentImage, sessionID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []EnrollmentSessionFile
+	for rows.Next() {
+		var i EnrollmentSessionFile
+		if err := rows.Scan(
+			&i.ID,
+			&i.SessionID,
+			&i.Prime,
+			&i.Path,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listEnrollmentSession = `-- name: ListEnrollmentSession :many
 SELECT id, prime, type, status, person_id, created_at
 FROM "EnrollmentSession"

@@ -34,3 +34,17 @@ VALUES ($1, $2,$3) RETURNING *;
 UPDATE "EnrollmentSession"
 SET "status" = $2
 WHERE "id" = $1;
+
+
+-- name: ListEnrollmentImage :many
+SELECT *
+FROM "EnrollmentSessionFile"
+WHERE session_id = $1;
+
+
+-- name: GetEnrollmentVideo :one
+SELECT *
+FROM "EnrollmentSessionFile"
+WHERE session_id = $1
+LIMIT 1;
+
