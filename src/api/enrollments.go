@@ -38,6 +38,7 @@ const (
 	E_STATUS_STAGED     = "staged"
 	E_STATUS_PROCESSING = "processing"
 	E_STATUS_FAILED     = "failed"
+	E_STATUS_CONFIRM    = "confirm"
 	E_STATUS_COMMIT     = "commit"
 )
 
@@ -177,7 +178,7 @@ func (server *Server) uploadVideo(c *fiber.Ctx) error {
 	}
 
 	// build full and relative path
-	relativePath := fmt.Sprintf("/%s/assets/%s", enrollment.Prime, file.Filename)
+	relativePath := fmt.Sprintf("sessions/%s/assets/%s", enrollment.Prime, file.Filename)
 	fullPath := path.Join(server.config.MediaDir, relativePath)
 
 	// Make directories

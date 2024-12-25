@@ -15,6 +15,8 @@ type Config struct {
 	TimeZone         string `mapstructure:"Time_Zone"`
 	Rtsp2Web         string `mapstructure:"RTSP_2_WEB_ADDR"`
 	JwtSecret        string `mapstructure:"JWT_SECRET"`
+	CentrifugoHOST   string `mapstructure:"CENTRIFUGO_HOST"`
+	CentrifugoAPIKEY string `mapstructure:"CENTRIFUGO_APIKEY"`
 }
 
 func LoadConfig(path string) (*Config, error) {

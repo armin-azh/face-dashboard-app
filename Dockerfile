@@ -1,9 +1,9 @@
 FROM golang:1.22 AS builder
 
 WORKDIR /app
+
 # Install required dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends librdkafka-dev curl \
-    && rm -rf /var/lib/apt/lists/* \
+RUN apt-get update && apt-get install -y --no-install-recommends librdkafka-dev curl
 
 # Cache dependencies
 COPY go.mod go.sum ./

@@ -9,10 +9,25 @@ import (
 	"context"
 )
 
+type CreateBulkEnrollmentParams struct {
+	Prime     string `json:"prime"`
+	SessionID int64  `json:"session_id"`
+	FaceID    *int64 `json:"face_id"`
+}
+
 type CreateBulkEnrollmentFilesParams struct {
 	Prime     string `json:"prime"`
 	SessionID int64  `json:"session_id"`
 	Path      string `json:"path"`
+}
+
+type CreateBulkFaceParams struct {
+	Prime     string    `json:"prime"`
+	Image     string    `json:"image"`
+	Thumbnail string    `json:"thumbnail"`
+	Vector    []float64 `json:"vector"`
+	Score     float64   `json:"score"`
+	Indexed   bool      `json:"indexed"`
 }
 
 const createEnrollmentFile = `-- name: CreateEnrollmentFile :one
@@ -189,6 +204,40 @@ func (q *Queries) ListEnrollmentSessionByPerson(ctx context.Context, personID in
 			&i.Status,
 			&i.PersonID,
 			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listFacesByPrimes = `-- name: ListFacesByPrimes :many
+SELECT id, prime, image, thumbnail, vector, score, indexed
+FROM "Face"
+WHERE prime = ANY($1::text[])
+`
+
+func (q *Queries) ListFacesByPrimes(ctx context.Context, dollar_1 []string) ([]Face, error) {
+	rows, err := q.db.Query(ctx, listFacesByPrimes, dollar_1)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Face
+	for rows.Next() {
+		var i Face
+		if err := rows.Scan(
+			&i.ID,
+			&i.Prime,
+			&i.Image,
+			&i.Thumbnail,
+			&i.Vector,
+			&i.Score,
+			&i.Indexed,
 		); err != nil {
 			return nil, err
 		}

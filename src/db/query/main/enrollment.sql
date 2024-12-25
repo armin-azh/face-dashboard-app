@@ -48,3 +48,17 @@ FROM "EnrollmentSessionFile"
 WHERE session_id = $1
 LIMIT 1;
 
+
+-- name: CreateBulkFace :copyfrom
+INSERT INTO "Face" (prime, image, thumbnail, vector, score, indexed)
+VALUES ($1, $2, $3, $4, $5, $6);
+
+-- name: ListFacesByPrimes :many
+SELECT *
+FROM "Face"
+WHERE prime = ANY($1::text[]);
+
+
+-- name: CreateBulkEnrollment :copyfrom
+INSERT INTO "Enrollment" (prime, session_id, face_id)
+VALUES ($1, $2, $3);

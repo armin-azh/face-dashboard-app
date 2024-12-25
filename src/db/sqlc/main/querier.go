@@ -9,7 +9,9 @@ import (
 )
 
 type Querier interface {
+	CreateBulkEnrollment(ctx context.Context, arg []CreateBulkEnrollmentParams) (int64, error)
 	CreateBulkEnrollmentFiles(ctx context.Context, arg []CreateBulkEnrollmentFilesParams) (int64, error)
+	CreateBulkFace(ctx context.Context, arg []CreateBulkFaceParams) (int64, error)
 	CreateCamera(ctx context.Context, prime string, name string, type_ string, url string, onDemand bool) (Camera, error)
 	CreateEnrollmentFile(ctx context.Context, prime string, sessionID int64, path string) (EnrollmentSessionFile, error)
 	CreateEnrollmentSession(ctx context.Context, prime string, type_ string, status string, personID int64) (EnrollmentSession, error)
@@ -26,6 +28,7 @@ type Querier interface {
 	ListEnrollmentSession(ctx context.Context, limit int32, offset int32) ([]EnrollmentSession, error)
 	ListEnrollmentSessionByPerson(ctx context.Context, personID int64, limit int32, offset int32) ([]EnrollmentSession, error)
 	ListFace(ctx context.Context, limit int32, offset int32) ([]Face, error)
+	ListFacesByPrimes(ctx context.Context, dollar_1 []string) ([]Face, error)
 	ListPerson(ctx context.Context, limit int32, offset int32) ([]Person, error)
 	UpdateEnrollmentStatusByID(ctx context.Context, iD int64, status string) error
 }

@@ -9,6 +9,40 @@ import (
 	"context"
 )
 
+// iteratorForCreateBulkEnrollment implements pgx.CopyFromSource.
+type iteratorForCreateBulkEnrollment struct {
+	rows                 []CreateBulkEnrollmentParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateBulkEnrollment) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateBulkEnrollment) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].Prime,
+		r.rows[0].SessionID,
+		r.rows[0].FaceID,
+	}, nil
+}
+
+func (r iteratorForCreateBulkEnrollment) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateBulkEnrollment(ctx context.Context, arg []CreateBulkEnrollmentParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"Enrollment"}, []string{"prime", "session_id", "face_id"}, &iteratorForCreateBulkEnrollment{rows: arg})
+}
+
 // iteratorForCreateBulkEnrollmentFiles implements pgx.CopyFromSource.
 type iteratorForCreateBulkEnrollmentFiles struct {
 	rows                 []CreateBulkEnrollmentFilesParams
@@ -41,4 +75,41 @@ func (r iteratorForCreateBulkEnrollmentFiles) Err() error {
 
 func (q *Queries) CreateBulkEnrollmentFiles(ctx context.Context, arg []CreateBulkEnrollmentFilesParams) (int64, error) {
 	return q.db.CopyFrom(ctx, []string{"EnrollmentSessionFile"}, []string{"prime", "session_id", "path"}, &iteratorForCreateBulkEnrollmentFiles{rows: arg})
+}
+
+// iteratorForCreateBulkFace implements pgx.CopyFromSource.
+type iteratorForCreateBulkFace struct {
+	rows                 []CreateBulkFaceParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateBulkFace) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateBulkFace) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].Prime,
+		r.rows[0].Image,
+		r.rows[0].Thumbnail,
+		r.rows[0].Vector,
+		r.rows[0].Score,
+		r.rows[0].Indexed,
+	}, nil
+}
+
+func (r iteratorForCreateBulkFace) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateBulkFace(ctx context.Context, arg []CreateBulkFaceParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"Face"}, []string{"prime", "image", "thumbnail", "vector", "score", "indexed"}, &iteratorForCreateBulkFace{rows: arg})
 }

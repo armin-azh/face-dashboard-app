@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS "Event";
 DROP TABLE IF EXISTS "Camera";
 DROP TABLE IF EXISTS "Enrollment";
+DROP TABLE IF EXISTS "EnrollmentSessionFile";
 DROP TABLE IF EXISTS "EnrollmentSession";
 DROP TABLE IF EXISTS "Person";
 DROP TABLE IF EXISTS "Face";

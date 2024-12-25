@@ -26,7 +26,7 @@ func main() {
 
 	go func() {
 		<-signalChat
-		log.Info("Signal Intrupt occured")
+		log.Info("Signal Interrupt occurred")
 		os.Exit(0)
 	}()
 
@@ -38,7 +38,7 @@ func main() {
 		cfgPath = "."
 	}
 
-	// Check if the config file is exists or not
+	// Check if the config file is existing or not
 	cfgPathInfo, err := os.Stat(cfgPath)
 	if err != nil {
 		log.Error("Cannot find config file", err)
@@ -114,7 +114,7 @@ func main() {
 
 	// Establish listeners
 	go func() {
-		listener.ResultListener(config.KafkaBootStr)
+		listener.ResultListener(config.KafkaBootStr, config.MediaDir, mainStore, config.CentrifugoHOST, config.CentrifugoAPIKEY)
 	}()
 
 	// Run the server
