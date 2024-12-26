@@ -400,7 +400,11 @@ func (server *Server) completeEnrollment(c *fiber.Ctx) error {
 		return handleSQLError(c, err)
 	}
 
-	person, err := server.mainStore.GetPersonById(context.Background(), enrollment.ID)
+	if enrollment.Status != E_STATUS_CONFIRM {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Could not complete enrollment", "code": InvalidOperation})
+	}
+
+	person, err := server.mainStore.GetPersonById(context.Background(), enrollment.PersonID)
 	if err != nil {
 		return handleSQLError(c, err)
 	}

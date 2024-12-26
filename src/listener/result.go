@@ -84,20 +84,20 @@ func ResultListener(bootstrapServer string, mediaRoot string, mainStore sqlcmain
 		}
 
 		log.Debugf("Received message from topic %s", *msg.TopicPartition.Topic)
+		var result pb.EnrollmentResult
+		err = proto.Unmarshal(msg.Value, &result)
+		if err != nil {
+			log.Errorf("Error unmarshaling enrollment result: %v", err)
+			continue
+		}
+
+		enrollment, err := mainStore.GetEnrollmentSessionByPrime(context.Background(), result.SessionId)
+		if err != nil {
+			log.Errorf("Error getting enrollment session id %s : %v", result.SessionId, err)
+			continue
+		}
 
 		if *msg.TopicPartition.Topic == "com.result.0" {
-			var result pb.EnrollmentResult
-			err = proto.Unmarshal(msg.Value, &result)
-			if err != nil {
-				log.Errorf("Error unmarshaling enrollment result: %v", err)
-				continue
-			}
-
-			enrollment, err := mainStore.GetEnrollmentSessionByPrime(context.Background(), result.SessionId)
-			if err != nil {
-				log.Errorf("Error getting enrollment session id %s : %v", result.SessionId, err)
-				continue
-			}
 
 			if result.Status == pb.Status_Success {
 
@@ -247,12 +247,200 @@ func ResultListener(bootstrapServer string, mediaRoot string, mainStore sqlcmain
 				}()
 
 			} else if result.Status == pb.Status_InternalFailure || result.Status == pb.Status_ExternalFailure {
-				// TODO: This should be implemented
+				err = mainStore.UpdateEnrollmentStatusByID(context.Background(), enrollment.ID, "failed")
+
+				if err != nil {
+					log.Errorf("Cannot change enrollment status to failed  %v", enrollment.Prime)
+					continue
+				}
+
+				// Send to Centrigugo
+				instance := EnrollmentNotification{Prime: enrollment.Prime, Status: "failed"}
+
+				// URL and headers
+				url := fmt.Sprintf("%s/api/publish", centrifugoHost)
+				headers := map[string]string{
+					"Authorization": fmt.Sprintf("apikey %s", centrifugoAPIKey),
+					"Content-Type":  "application/json",
+				}
+
+				// Payload
+				payload := map[string]interface{}{
+					"channel": fmt.Sprintf("enrollment:#%s", enrollment.Prime),
+					"data":    instance, // This uses the serialized instance
+				}
+
+				// Serialize payload to JSON
+				payloadBytes, err := json.Marshal(payload)
+				if err != nil {
+					log.Fatalf("Failed to serialize payload: %v", err)
+				}
+
+				go func() {
+
+					// Create HTTP request
+					req, err := http.NewRequest("POST", url, bytes.NewBuffer(payloadBytes))
+					if err != nil {
+						log.Fatalf("Failed to create HTTP request: %v", err)
+					}
+
+					// Set headers
+					for key, value := range headers {
+						req.Header.Set(key, value)
+					}
+
+					// Make HTTP request
+					client := &http.Client{}
+					log.Debugf("New notification has been received to send %s", url)
+					resp, err := client.Do(req)
+					if err != nil {
+						log.Fatalf("Failed to send HTTP request: %v", err)
+					}
+					defer func(Body io.ReadCloser) {
+						err := Body.Close()
+						if err != nil {
+
+						}
+					}(resp.Body)
+					// Check response status
+					if resp.StatusCode != http.StatusOK {
+						log.Errorf("Something happened to broadcast new notification %s, status code: %d", url, resp.StatusCode)
+					} else {
+						log.Debug("Notification broadcast successfully.")
+					}
+				}()
 			} else {
 				log.Errorf("Invalid result status: %v", result.Status)
 				continue
 			}
 		} else if *msg.TopicPartition.Topic == "com.result.1" {
+
+			if result.Status == pb.Status_Success {
+				err = mainStore.UpdateEnrollmentStatusByID(context.Background(), enrollment.ID, "commit")
+				if err != nil {
+					log.Errorf("Cannot change enrollment status to commit  %v", enrollment.Prime)
+					continue
+				}
+				// Send to Centrigugo
+				instance := EnrollmentNotification{Prime: enrollment.Prime, Status: "commit"}
+
+				// URL and headers
+				url := fmt.Sprintf("%s/api/publish", centrifugoHost)
+				headers := map[string]string{
+					"Authorization": fmt.Sprintf("apikey %s", centrifugoAPIKey),
+					"Content-Type":  "application/json",
+				}
+
+				// Payload
+				payload := map[string]interface{}{
+					"channel": fmt.Sprintf("enrollment:#%s", enrollment.Prime),
+					"data":    instance, // This uses the serialized instance
+				}
+
+				// Serialize payload to JSON
+				payloadBytes, err := json.Marshal(payload)
+				if err != nil {
+					log.Fatalf("Failed to serialize payload: %v", err)
+				}
+
+				go func() {
+
+					// Create HTTP request
+					req, err := http.NewRequest("POST", url, bytes.NewBuffer(payloadBytes))
+					if err != nil {
+						log.Fatalf("Failed to create HTTP request: %v", err)
+					}
+
+					// Set headers
+					for key, value := range headers {
+						req.Header.Set(key, value)
+					}
+
+					// Make HTTP request
+					client := &http.Client{}
+					log.Debugf("New notification has been received to send %s", url)
+					resp, err := client.Do(req)
+					if err != nil {
+						log.Fatalf("Failed to send HTTP request: %v", err)
+					}
+					defer func(Body io.ReadCloser) {
+						err := Body.Close()
+						if err != nil {
+
+						}
+					}(resp.Body)
+					// Check response status
+					if resp.StatusCode != http.StatusOK {
+						log.Errorf("Something happened to broadcast new notification %s, status code: %d", url, resp.StatusCode)
+					} else {
+						log.Debug("Notification broadcast successfully.")
+					}
+				}()
+			} else if result.Status == pb.Status_InternalFailure || result.Status == pb.Status_ExternalFailure {
+
+				err = mainStore.UpdateEnrollmentStatusByID(context.Background(), enrollment.ID, "failed")
+
+				if err != nil {
+					log.Errorf("Cannot change enrollment status to failed  %v", enrollment.Prime)
+					continue
+				}
+
+				// Send to Centrigugo
+				instance := EnrollmentNotification{Prime: enrollment.Prime, Status: "failed"}
+
+				// URL and headers
+				url := fmt.Sprintf("%s/api/publish", centrifugoHost)
+				headers := map[string]string{
+					"Authorization": fmt.Sprintf("apikey %s", centrifugoAPIKey),
+					"Content-Type":  "application/json",
+				}
+
+				// Payload
+				payload := map[string]interface{}{
+					"channel": fmt.Sprintf("enrollment:#%s", enrollment.Prime),
+					"data":    instance, // This uses the serialized instance
+				}
+
+				// Serialize payload to JSON
+				payloadBytes, err := json.Marshal(payload)
+				if err != nil {
+					log.Fatalf("Failed to serialize payload: %v", err)
+				}
+
+				go func() {
+
+					// Create HTTP request
+					req, err := http.NewRequest("POST", url, bytes.NewBuffer(payloadBytes))
+					if err != nil {
+						log.Fatalf("Failed to create HTTP request: %v", err)
+					}
+
+					// Set headers
+					for key, value := range headers {
+						req.Header.Set(key, value)
+					}
+
+					// Make HTTP request
+					client := &http.Client{}
+					log.Debugf("New notification has been received to send %s", url)
+					resp, err := client.Do(req)
+					if err != nil {
+						log.Fatalf("Failed to send HTTP request: %v", err)
+					}
+					defer func(Body io.ReadCloser) {
+						err := Body.Close()
+						if err != nil {
+
+						}
+					}(resp.Body)
+					// Check response status
+					if resp.StatusCode != http.StatusOK {
+						log.Errorf("Something happened to broadcast new notification %s, status code: %d", url, resp.StatusCode)
+					} else {
+						log.Debug("Notification broadcast successfully.")
+					}
+				}()
+			}
 
 		} else {
 			log.Warnf("This topic is not currently enrolled: %s", *msg.TopicPartition.Topic)
