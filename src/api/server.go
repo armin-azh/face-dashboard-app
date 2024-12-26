@@ -76,6 +76,7 @@ func NewServer(mainStore sqlcmain.Store, config *common.Config, producer kafka_i
 	enrollments.Post("/enrollment/:id/images", server.uploadImages)          // Upload images
 	enrollments.Get("/enrollment/:id/process", server.doProcess)             // put enrollment on queue
 	enrollments.Post("/enrollment/:id/complete", server.completeEnrollment)  // Complete the enrollment
+	enrollments.Get("/enrollment/:id/files", server.getEnrollmentFaceList)   // Get Enrollment Files
 
 	// Camera
 	cameras := v1.Group("/cameras")

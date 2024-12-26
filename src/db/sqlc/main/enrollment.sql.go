@@ -7,6 +7,8 @@ package sqlcmain
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type CreateBulkEnrollmentParams struct {
@@ -204,6 +206,187 @@ func (q *Queries) ListEnrollmentSessionByPerson(ctx context.Context, personID in
 			&i.Status,
 			&i.PersonID,
 			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listFaceBySessionID = `-- name: ListFaceBySessionID :many
+SELECT
+    EN.id AS enrollment_id,
+    EN.prime AS enrollment_prime,
+    EN.session_id,
+    EN.face_id,
+    EN.created_at AS enrollment_created_at,
+    F.id AS face_id,
+    F.prime AS face_prime,
+    F.image AS face_image,
+    F.thumbnail AS face_thumbnail,
+    F.vector AS face_vector,
+    F.score AS face_score,
+    F.indexed AS face_indexed,
+    ENS.id AS session_id,
+    ENS.prime AS session_prime,
+    ENS.type AS session_type,
+    ENS.status AS session_status,
+    ENS.person_id AS session_person_id,
+    ENS.created_at AS session_created_at
+FROM
+    "Enrollment" AS EN
+        JOIN
+    "Face" AS F ON EN.face_id = F.id
+        JOIN
+    "EnrollmentSession" AS ENS ON EN.session_id = ENS.id
+WHERE
+    ENS.id = $1
+`
+
+type ListFaceBySessionIDRow struct {
+	EnrollmentID        int64              `json:"enrollment_id"`
+	EnrollmentPrime     string             `json:"enrollment_prime"`
+	SessionID           int64              `json:"session_id"`
+	FaceID              *int64             `json:"face_id"`
+	EnrollmentCreatedAt pgtype.Timestamptz `json:"enrollment_created_at"`
+	FaceID_2            int64              `json:"face_id_2"`
+	FacePrime           string             `json:"face_prime"`
+	FaceImage           string             `json:"face_image"`
+	FaceThumbnail       string             `json:"face_thumbnail"`
+	FaceVector          []float64          `json:"face_vector"`
+	FaceScore           float64            `json:"face_score"`
+	FaceIndexed         bool               `json:"face_indexed"`
+	SessionID_2         int64              `json:"session_id_2"`
+	SessionPrime        string             `json:"session_prime"`
+	SessionType         string             `json:"session_type"`
+	SessionStatus       string             `json:"session_status"`
+	SessionPersonID     int64              `json:"session_person_id"`
+	SessionCreatedAt    pgtype.Timestamptz `json:"session_created_at"`
+}
+
+func (q *Queries) ListFaceBySessionID(ctx context.Context, id int64) ([]ListFaceBySessionIDRow, error) {
+	rows, err := q.db.Query(ctx, listFaceBySessionID, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListFaceBySessionIDRow
+	for rows.Next() {
+		var i ListFaceBySessionIDRow
+		if err := rows.Scan(
+			&i.EnrollmentID,
+			&i.EnrollmentPrime,
+			&i.SessionID,
+			&i.FaceID,
+			&i.EnrollmentCreatedAt,
+			&i.FaceID_2,
+			&i.FacePrime,
+			&i.FaceImage,
+			&i.FaceThumbnail,
+			&i.FaceVector,
+			&i.FaceScore,
+			&i.FaceIndexed,
+			&i.SessionID_2,
+			&i.SessionPrime,
+			&i.SessionType,
+			&i.SessionStatus,
+			&i.SessionPersonID,
+			&i.SessionCreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listFaceBySessionIDAndEnrollmentPrimes = `-- name: ListFaceBySessionIDAndEnrollmentPrimes :many
+SELECT
+    EN.id AS enrollment_id,
+    EN.prime AS enrollment_prime,
+    EN.session_id,
+    EN.face_id,
+    EN.created_at AS enrollment_created_at,
+    F.id AS face_id,
+    F.prime AS face_prime,
+    F.image AS face_image,
+    F.thumbnail AS face_thumbnail,
+    F.vector AS face_vector,
+    F.score AS face_score,
+    F.indexed AS face_indexed,
+    ENS.id AS session_id,
+    ENS.prime AS session_prime,
+    ENS.type AS session_type,
+    ENS.status AS session_status,
+    ENS.person_id AS session_person_id,
+    ENS.created_at AS session_created_at
+FROM
+    "Enrollment" AS EN
+        JOIN
+    "Face" AS F ON EN.face_id = F.id
+        JOIN
+    "EnrollmentSession" AS ENS ON EN.session_id = ENS.id
+WHERE
+    ENS.id = $1
+  AND EN.prime = ANY($2::varchar[])
+`
+
+type ListFaceBySessionIDAndEnrollmentPrimesRow struct {
+	EnrollmentID        int64              `json:"enrollment_id"`
+	EnrollmentPrime     string             `json:"enrollment_prime"`
+	SessionID           int64              `json:"session_id"`
+	FaceID              *int64             `json:"face_id"`
+	EnrollmentCreatedAt pgtype.Timestamptz `json:"enrollment_created_at"`
+	FaceID_2            int64              `json:"face_id_2"`
+	FacePrime           string             `json:"face_prime"`
+	FaceImage           string             `json:"face_image"`
+	FaceThumbnail       string             `json:"face_thumbnail"`
+	FaceVector          []float64          `json:"face_vector"`
+	FaceScore           float64            `json:"face_score"`
+	FaceIndexed         bool               `json:"face_indexed"`
+	SessionID_2         int64              `json:"session_id_2"`
+	SessionPrime        string             `json:"session_prime"`
+	SessionType         string             `json:"session_type"`
+	SessionStatus       string             `json:"session_status"`
+	SessionPersonID     int64              `json:"session_person_id"`
+	SessionCreatedAt    pgtype.Timestamptz `json:"session_created_at"`
+}
+
+func (q *Queries) ListFaceBySessionIDAndEnrollmentPrimes(ctx context.Context, iD int64, column2 []string) ([]ListFaceBySessionIDAndEnrollmentPrimesRow, error) {
+	rows, err := q.db.Query(ctx, listFaceBySessionIDAndEnrollmentPrimes, iD, column2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListFaceBySessionIDAndEnrollmentPrimesRow
+	for rows.Next() {
+		var i ListFaceBySessionIDAndEnrollmentPrimesRow
+		if err := rows.Scan(
+			&i.EnrollmentID,
+			&i.EnrollmentPrime,
+			&i.SessionID,
+			&i.FaceID,
+			&i.EnrollmentCreatedAt,
+			&i.FaceID_2,
+			&i.FacePrime,
+			&i.FaceImage,
+			&i.FaceThumbnail,
+			&i.FaceVector,
+			&i.FaceScore,
+			&i.FaceIndexed,
+			&i.SessionID_2,
+			&i.SessionPrime,
+			&i.SessionType,
+			&i.SessionStatus,
+			&i.SessionPersonID,
+			&i.SessionCreatedAt,
 		); err != nil {
 			return nil, err
 		}

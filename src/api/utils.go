@@ -19,15 +19,15 @@ func handleSQLError(c *fiber.Ctx, err error) error {
 			Message: fmt.Sprintf("%v", err),
 		}
 	}
-	
-	if errors.Is(err, sql.ErrNoRows){
+
+	if errors.Is(err, sql.ErrNoRows) {
 		return &fiber.Error{
-			Code: fiber.ErrNotFound.Code,
+			Code:    fiber.ErrNotFound.Code,
 			Message: "no resource founded",
 		}
 	}
 	return &fiber.Error{
 		Code:    fiber.ErrBadRequest.Code,
-		Message: "Bad request happened",
+		Message: fmt.Sprintf("%v", err),
 	}
 }

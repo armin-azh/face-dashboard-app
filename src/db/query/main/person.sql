@@ -15,3 +15,11 @@ FROM "Person"
 WHERE 
     prime = $1
 LIMIT 1;
+
+
+-- name: GetPersonById :one
+SELECT *
+FROM "Person"
+WHERE
+    id = $1
+LIMIT 1;

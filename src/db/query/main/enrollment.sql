@@ -62,3 +62,62 @@ WHERE prime = ANY($1::text[]);
 -- name: CreateBulkEnrollment :copyfrom
 INSERT INTO "Enrollment" (prime, session_id, face_id)
 VALUES ($1, $2, $3);
+
+-- name: ListFaceBySessionID :many
+SELECT
+    EN.id AS enrollment_id,
+    EN.prime AS enrollment_prime,
+    EN.session_id,
+    EN.face_id,
+    EN.created_at AS enrollment_created_at,
+    F.id AS face_id,
+    F.prime AS face_prime,
+    F.image AS face_image,
+    F.thumbnail AS face_thumbnail,
+    F.vector AS face_vector,
+    F.score AS face_score,
+    F.indexed AS face_indexed,
+    ENS.id AS session_id,
+    ENS.prime AS session_prime,
+    ENS.type AS session_type,
+    ENS.status AS session_status,
+    ENS.person_id AS session_person_id,
+    ENS.created_at AS session_created_at
+FROM
+    "Enrollment" AS EN
+        JOIN
+    "Face" AS F ON EN.face_id = F.id
+        JOIN
+    "EnrollmentSession" AS ENS ON EN.session_id = ENS.id
+WHERE
+    ENS.id = $1;
+
+-- name: ListFaceBySessionIDAndEnrollmentPrimes :many
+SELECT
+    EN.id AS enrollment_id,
+    EN.prime AS enrollment_prime,
+    EN.session_id,
+    EN.face_id,
+    EN.created_at AS enrollment_created_at,
+    F.id AS face_id,
+    F.prime AS face_prime,
+    F.image AS face_image,
+    F.thumbnail AS face_thumbnail,
+    F.vector AS face_vector,
+    F.score AS face_score,
+    F.indexed AS face_indexed,
+    ENS.id AS session_id,
+    ENS.prime AS session_prime,
+    ENS.type AS session_type,
+    ENS.status AS session_status,
+    ENS.person_id AS session_person_id,
+    ENS.created_at AS session_created_at
+FROM
+    "Enrollment" AS EN
+        JOIN
+    "Face" AS F ON EN.face_id = F.id
+        JOIN
+    "EnrollmentSession" AS ENS ON EN.session_id = ENS.id
+WHERE
+    ENS.id = $1
+  AND EN.prime = ANY($2::varchar[]);

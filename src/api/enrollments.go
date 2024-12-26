@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"face.com/gateway/src/api/serializers"
 	sqlcmain "face.com/gateway/src/db/sqlc/main"
 	srv_proto "face.com/gateway/src/proto"
 	"fmt"
@@ -386,6 +387,107 @@ func (server *Server) doProcess(c *fiber.Ctx) error {
 }
 
 func (server *Server) completeEnrollment(c *fiber.Ctx) error {
+	serializer := new(serializers.EnrollmentPrimeSerializer)
+	if err := server.ValidatePayload(serializer, c); err != nil {
+		return err
+	}
 
-	return nil
+	id := c.Params("id")
+
+	// Get Enrollment
+	enrollment, err := server.mainStore.GetEnrollmentSessionByPrime(context.Background(), id)
+	if err != nil {
+		return handleSQLError(c, err)
+	}
+
+	person, err := server.mainStore.GetPersonById(context.Background(), enrollment.ID)
+	if err != nil {
+		return handleSQLError(c, err)
+	}
+
+	faces, err := server.mainStore.ListFaceBySessionIDAndEnrollmentPrimes(context.Background(), enrollment.ID, serializer.Primes)
+	if err != nil {
+		return handleSQLError(c, err)
+	}
+
+	enroll := &srv_proto.Enrollment{
+		SessionId: enrollment.Prime,
+		PersonId:  person.Prime,
+	}
+
+	var imageFiles []*srv_proto.ImageFile
+
+	for _, face := range faces {
+		imageFile := &srv_proto.ImageFile{Path: face.FaceImage}
+		imageFiles = append(imageFiles, imageFile)
+	}
+
+	enroll.Images = imageFiles
+	enroll.Type = srv_proto.Type_Image
+
+	// Send it through broker
+	deliveryChan := make(chan kafka.Event, 1)
+
+	payload, err := proto.Marshal(enroll)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "cannot encode the proto data"})
+	}
+
+	qName := "com.enrollment.1"
+	go func() {
+		if err := server.producer.Produce(&kafka.Message{TopicPartition: kafka.TopicPartition{Topic: &qName, Partition: kafka.PartitionAny}, Value: payload}, deliveryChan); err != nil {
+			log.Info(err.Error())
+		}
+		server.producer.Flush(15 * 1000)
+	}()
+
+	select {
+	case e := <-deliveryChan:
+		m := e.(*kafka.Message)
+		if m.TopicPartition.Error != nil {
+			log.Errorf("Delivery failed: %v\n", m.TopicPartition.Error)
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Failed to send message to Kafka",
+				"code":    DeliveryFailure,
+			})
+		}
+
+		log.Debugf("Delivered message to Kafka: %v\n", string(m.Value))
+
+		err = server.mainStore.UpdateEnrollmentStatusByID(context.Background(), enrollment.ID, E_STATUS_PROCESSING)
+
+		if err != nil {
+			return handleSQLError(c, err)
+		}
+
+	case <-time.After(10 * time.Second):
+		err = c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Kafka delivery report timed out", "code": KafkaTimeout})
+	}
+
+	close(deliveryChan) // Ensure the channel is closed
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Enrollment is going", "code": SUCCESS})
+}
+
+func (server *Server) getEnrollmentFaceList(c *fiber.Ctx) error {
+
+	id := c.Params("id")
+
+	// Get Enrollment
+	enrollment, err := server.mainStore.GetEnrollmentSessionByPrime(context.Background(), id)
+	if err != nil {
+		return handleSQLError(c, err)
+	}
+
+	// Get Enrollment Files
+	faces, err := server.mainStore.ListFaceBySessionID(context.Background(), enrollment.ID)
+	if err != nil {
+		return handleSQLError(c, err)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Files retrieved successfully",
+		"code":    SUCCESS,
+		"data":    faces,
+	})
 }
