@@ -12,6 +12,12 @@ type TxEnrollmentFile struct {
 	NextStatus string
 }
 
+type TxEnrollmentFileList struct {
+	SessionId  int64
+	Files      []CreateBulkEnrollmentFilesParams
+	NextStatus string
+}
+
 func (store *SQLStore) CreateEnrollmentFileTx(ctx context.Context, arg TxEnrollmentFile) (*EnrollmentSessionFile, error) {
 
 	var file *EnrollmentSessionFile
@@ -31,4 +37,23 @@ func (store *SQLStore) CreateEnrollmentFileTx(ctx context.Context, arg TxEnrollm
 	})
 
 	return file, err
+}
+
+func (store *SQLStore) CreateEnrollmentFileListTx(ctx context.Context, arg TxEnrollmentFileList) error {
+
+	err := store.execTx(ctx, func(q *Queries) error {
+		_, err := store.CreateBulkEnrollmentFiles(ctx, arg.Files)
+		if err != nil {
+			return fmt.Errorf("CreateEnrollmentFileTx: %w", err)
+		}
+
+		err = store.UpdateEnrollmentStatusByID(ctx, arg.SessionId, arg.NextStatus)
+		if err != nil {
+			return fmt.Errorf("UpdateEnrollmentStatusByID: %w", err)
+		}
+
+		return nil
+	})
+
+	return err
 }

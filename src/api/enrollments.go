@@ -215,20 +215,81 @@ func (server *Server) uploadVideo(c *fiber.Ctx) error {
 func (server *Server) uploadImages(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	_, err := server.mainStore.GetEnrollmentSessionByPrime(context.Background(), id)
+	enrollment, err := server.mainStore.GetEnrollmentSessionByPrime(context.Background(), id)
 	if err != nil {
 		return handleSQLError(c, err)
 	}
 
-	//_, err := c.MultipartForm()
-	//if err != nil{
-	//	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-	//		"message": "No image files were provided",
-	//		"code": FAILED,
-	//	})
-	//}
-	//
-	return nil
+	if enrollment.Status != E_STATUS_CREATED {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "File has been uploaded before",
+			"code":    FAILED,
+		})
+	}
+
+	if enrollment.Type != E_TYPE_IMAGE {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "You cannot have permission to upload file to IMAGE",
+			"code":    FAILED,
+		})
+	}
+
+	files, err := c.MultipartForm()
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "No image files were provided",
+			"code":    FAILED,
+		})
+	}
+
+	// Get the "image" files from the form
+	uploadedFiles := files.File["image"]
+	if len(uploadedFiles) == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "No files were uploaded",
+		})
+	}
+
+	var fileParams []sqlcmain.CreateBulkEnrollmentFilesParams
+	for _, file := range uploadedFiles {
+
+		// build full and relative path
+		relativePath := fmt.Sprintf("sessions/%s/assets/%s", enrollment.Prime, file.Filename)
+		fullPath := path.Join(server.config.MediaDir, relativePath)
+
+		// Make directories
+		err = os.MkdirAll(filepath.Dir(fullPath), 0755)
+		if err != nil {
+			log.Errorf("Cannot create subdirectory for file %s: %v", file.Filename, err)
+			continue
+		}
+
+		// Save the uploaded file to the full path
+		err = c.SaveFile(file, fullPath)
+		if err != nil {
+			log.Errorf("Cannot save file to %s: %s", fullPath, err)
+			continue
+		}
+
+		fileParams = append(fileParams,
+			sqlcmain.CreateBulkEnrollmentFilesParams{
+				Prime:     utils.UUID(),
+				Path:      relativePath,
+				SessionID: enrollment.ID})
+
+	}
+
+	params := sqlcmain.TxEnrollmentFileList{SessionId: enrollment.ID, Files: fileParams, NextStatus: E_STATUS_STAGED}
+	err = server.mainStore.CreateEnrollmentFileListTx(context.Background(), params)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error(), "code": InternalFailure})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Files uploaded successfully",
+		"code":    SUCCESS,
+		"data":    fileParams,
+	})
 }
 
 func (server *Server) doProcess(c *fiber.Ctx) error {
@@ -241,7 +302,6 @@ func (server *Server) doProcess(c *fiber.Ctx) error {
 
 	enroll := &srv_proto.Enrollment{
 		SessionId: enrollment.Prime,
-		Type:      srv_proto.Type_Video,
 	}
 
 	if enrollment.Status != E_STATUS_STAGED {
@@ -256,6 +316,7 @@ func (server *Server) doProcess(c *fiber.Ctx) error {
 			return handleSQLError(c, err)
 		}
 		enroll.VideoPath = file.Path
+		enroll.Type = srv_proto.Type_Video
 
 	} else if enrollment.Type == E_TYPE_IMAGE {
 
@@ -273,6 +334,7 @@ func (server *Server) doProcess(c *fiber.Ctx) error {
 		}
 
 		enroll.Images = imageFiles
+		enroll.Type = srv_proto.Type_Image
 	} else {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Invalid file type", "code": InvalidOperation})
 	}
@@ -321,4 +383,9 @@ func (server *Server) doProcess(c *fiber.Ctx) error {
 	close(deliveryChan) // Ensure the channel is closed
 
 	return err
+}
+
+func (server *Server) completeEnrollment(c *fiber.Ctx) error {
+
+	return nil
 }
