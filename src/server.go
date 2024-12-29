@@ -117,6 +117,10 @@ func main() {
 		listener.ResultListener(config.KafkaBootStr, config.MediaDir, mainStore, config.CentrifugoHOST, config.CentrifugoAPIKEY)
 	}()
 
+	go func() {
+		listener.EventListener(config.KafkaBootStr, config.MediaDir, mainStore, config.CentrifugoHOST, config.CentrifugoAPIKEY)
+	}()
+
 	// Run the server
 	server := api.NewServer(mainStore, config, producer, rdb)
 	if err := server.Start(fmt.Sprintf("%s:%d", config.Host, config.Port)); err != nil {

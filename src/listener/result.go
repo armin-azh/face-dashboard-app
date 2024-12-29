@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"face.com/gateway/src/common"
 	sqlcmain "face.com/gateway/src/db/sqlc/main"
 	pb "face.com/gateway/src/proto"
 	"fmt"
@@ -18,37 +19,19 @@ import (
 	"path/filepath"
 )
 
-// saveImage saves a byte slice to an image file
-func saveImage(data []byte, fileName string) error {
-	file, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-
-		}
-	}(file)
-
-	_, err = file.Write(data)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 type EnrollmentNotification struct {
 	Prime  string `json:"prime"`
 	Status string `json:"status"`
 }
 
 func ResultListener(bootstrapServer string, mediaRoot string, mainStore sqlcmain.Store, centrifugoHost string, centrifugoAPIKey string) {
+	// When execution is terminated
+	defer func() { log.Info("Result Listener stopped") }()
+
 	// Kafka consumer setup
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": bootstrapServer,
-		"group.id":          "face-result",
+		"group.id":          "faceResultGroup",
 		"auto.offset.reset": "earliest",
 		"fetch.max.bytes":   10485760,
 	})
@@ -127,7 +110,7 @@ func ResultListener(bootstrapServer string, mediaRoot string, mainStore sqlcmain
 						}
 
 						// Save image
-						err := saveImage(face.AlignFace, fullPath)
+						err := common.SaveImage(face.AlignFace, fullPath)
 						if err != nil {
 							log.Errorf("Error saving face: %v", err)
 						}
@@ -148,7 +131,7 @@ func ResultListener(bootstrapServer string, mediaRoot string, mainStore sqlcmain
 						}
 
 						// Save image
-						err = saveImage(face.AlignFace, fullThumbnailPath)
+						err = common.SaveImage(face.AlignFace, fullThumbnailPath)
 						if err != nil {
 							log.Errorf("Error saving face: %v", err)
 						}
