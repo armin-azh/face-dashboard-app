@@ -77,6 +77,43 @@ func (q *Queries) CreateBulkEnrollmentFiles(ctx context.Context, arg []CreateBul
 	return q.db.CopyFrom(ctx, []string{"EnrollmentSessionFile"}, []string{"prime", "session_id", "path"}, &iteratorForCreateBulkEnrollmentFiles{rows: arg})
 }
 
+// iteratorForCreateBulkEvent implements pgx.CopyFromSource.
+type iteratorForCreateBulkEvent struct {
+	rows                 []CreateBulkEventParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateBulkEvent) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateBulkEvent) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].Prime,
+		r.rows[0].PersonID,
+		r.rows[0].CameraID,
+		r.rows[0].Thumbnail,
+		r.rows[0].Score,
+		r.rows[0].HappendAt,
+	}, nil
+}
+
+func (r iteratorForCreateBulkEvent) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateBulkEvent(ctx context.Context, arg []CreateBulkEventParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"Event"}, []string{"prime", "person_id", "camera_id", "thumbnail", "score", "happend_at"}, &iteratorForCreateBulkEvent{rows: arg})
+}
+
 // iteratorForCreateBulkFace implements pgx.CopyFromSource.
 type iteratorForCreateBulkFace struct {
 	rows                 []CreateBulkFaceParams

@@ -14,7 +14,7 @@ import (
 type CreateBulkEnrollmentParams struct {
 	Prime     string `json:"prime"`
 	SessionID int64  `json:"session_id"`
-	FaceID    *int64 `json:"face_id"`
+	FaceID    int64  `json:"face_id"`
 }
 
 type CreateBulkEnrollmentFilesParams struct {
@@ -251,7 +251,7 @@ type ListFaceBySessionIDRow struct {
 	EnrollmentID        int64              `json:"enrollment_id"`
 	EnrollmentPrime     string             `json:"enrollment_prime"`
 	SessionID           int64              `json:"session_id"`
-	FaceID              *int64             `json:"face_id"`
+	FaceID              int64              `json:"face_id"`
 	EnrollmentCreatedAt pgtype.Timestamptz `json:"enrollment_created_at"`
 	FaceID_2            int64              `json:"face_id_2"`
 	FacePrime           string             `json:"face_prime"`
@@ -342,7 +342,7 @@ type ListFaceBySessionIDAndEnrollmentPrimesRow struct {
 	EnrollmentID        int64              `json:"enrollment_id"`
 	EnrollmentPrime     string             `json:"enrollment_prime"`
 	SessionID           int64              `json:"session_id"`
-	FaceID              *int64             `json:"face_id"`
+	FaceID              int64              `json:"face_id"`
 	EnrollmentCreatedAt pgtype.Timestamptz `json:"enrollment_created_at"`
 	FaceID_2            int64              `json:"face_id_2"`
 	FacePrime           string             `json:"face_prime"`

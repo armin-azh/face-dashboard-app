@@ -11,6 +11,7 @@ import (
 type Querier interface {
 	CreateBulkEnrollment(ctx context.Context, arg []CreateBulkEnrollmentParams) (int64, error)
 	CreateBulkEnrollmentFiles(ctx context.Context, arg []CreateBulkEnrollmentFilesParams) (int64, error)
+	CreateBulkEvent(ctx context.Context, arg []CreateBulkEventParams) (int64, error)
 	CreateBulkFace(ctx context.Context, arg []CreateBulkFaceParams) (int64, error)
 	CreateCamera(ctx context.Context, prime string, name string, type_ string, url string, onDemand bool) (Camera, error)
 	CreateEnrollmentFile(ctx context.Context, prime string, sessionID int64, path string) (EnrollmentSessionFile, error)

@@ -124,7 +124,7 @@ func ResultListener(bootstrapServer string, mediaRoot string, mainStore sqlcmain
 						fullThumbnailPath := path.Join(mediaRoot, relativeThumbnailPath)
 
 						// Make directories
-						err = os.MkdirAll(filepath.Dir(relativeThumbnailPath), 0755)
+						err = os.MkdirAll(filepath.Dir(fullThumbnailPath), 0755)
 						if err != nil {
 							log.Errorf("Error creating media directory %s: %v", filepath.Dir(relativeThumbnailPath), err)
 							continue
@@ -159,7 +159,7 @@ func ResultListener(bootstrapServer string, mediaRoot string, mainStore sqlcmain
 				var enrollmentParams []sqlcmain.CreateBulkEnrollmentParams
 
 				for _, face := range facesList {
-					enrollmentParams = append(enrollmentParams, sqlcmain.CreateBulkEnrollmentParams{Prime: utils.UUID(), SessionID: enrollment.ID, FaceID: &face.ID})
+					enrollmentParams = append(enrollmentParams, sqlcmain.CreateBulkEnrollmentParams{Prime: utils.UUID(), SessionID: enrollment.ID, FaceID: face.ID})
 				}
 
 				_, err = mainStore.CreateBulkEnrollment(context.Background(), enrollmentParams)

@@ -2,13 +2,10 @@
 SELECT 
     e.id AS event_id,
     e.prime AS event_prime,
+    e.thumbnail AS face_thumbnail,
+    e.score AS face_score,
     e.happend_at,
     e.created_at AS event_created_at,
-    f.id AS face_id,
-    f.prime AS face_prime,
-    f.image AS face_image,
-    f.thumbnail AS face_thumbnail,
-    f.score AS face_score,
     c.id AS camera_id,
     c.prime AS camera_prime,
     c.name AS camera_name,
@@ -21,8 +18,6 @@ SELECT
     p.last_name AS person_last_name
 FROM 
     "Event" e
-LEFT JOIN 
-    "Face" f ON e.face_id = f.id
 LEFT JOIN 
     "Camera" c ON e.camera_id = c.id
 LEFT JOIN 
@@ -35,13 +30,10 @@ LIMIT $1 OFFSET $2;
 SELECT 
     e.id AS event_id,
     e.prime AS event_prime,
+    e.thumbnail AS face_thumbnail,
+    e.score AS face_score,
     e.happend_at,
     e.created_at AS event_created_at,
-    f.id AS face_id,
-    f.prime AS face_prime,
-    f.image AS face_image,
-    f.thumbnail AS face_thumbnail,
-    f.score AS face_score,
     c.id AS camera_id,
     c.prime AS camera_prime,
     c.name AS camera_name,
@@ -55,11 +47,13 @@ SELECT
 FROM 
     "Event" e
 LEFT JOIN 
-    "Face" f ON e.face_id = f.id
-LEFT JOIN 
     "Camera" c ON e.camera_id = c.id
 LEFT JOIN 
     "Person" p ON e.person_id = p.id
 WHERE 
     e.prime = $1
 LIMIT 1;
+
+-- name: CreateBulkEvent :copyfrom
+INSERT INTO "Event" (prime, person_id, camera_id, thumbnail, score, happend_at)
+VALUES ($1, $2, $3, $4, $5, $6);

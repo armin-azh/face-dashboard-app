@@ -22,7 +22,7 @@ type Enrollment struct {
 	ID        int64              `json:"id"`
 	Prime     string             `json:"prime"`
 	SessionID int64              `json:"session_id"`
-	FaceID    *int64             `json:"face_id"`
+	FaceID    int64              `json:"face_id"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
@@ -48,7 +48,8 @@ type Event struct {
 	Prime     string             `json:"prime"`
 	PersonID  *int64             `json:"person_id"`
 	CameraID  *int64             `json:"camera_id"`
-	FaceID    *int64             `json:"face_id"`
+	Thumbnail string             `json:"thumbnail"`
+	Score     float64            `json:"score"`
 	HappendAt pgtype.Timestamptz `json:"happend_at"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }

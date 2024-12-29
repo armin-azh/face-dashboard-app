@@ -11,17 +11,23 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type CreateBulkEventParams struct {
+	Prime     string             `json:"prime"`
+	PersonID  *int64             `json:"person_id"`
+	CameraID  *int64             `json:"camera_id"`
+	Thumbnail string             `json:"thumbnail"`
+	Score     float64            `json:"score"`
+	HappendAt pgtype.Timestamptz `json:"happend_at"`
+}
+
 const getEventByPrime = `-- name: GetEventByPrime :one
 SELECT 
     e.id AS event_id,
     e.prime AS event_prime,
+    e.thumbnail AS face_thumbnail,
+    e.score AS face_score,
     e.happend_at,
     e.created_at AS event_created_at,
-    f.id AS face_id,
-    f.prime AS face_prime,
-    f.image AS face_image,
-    f.thumbnail AS face_thumbnail,
-    f.score AS face_score,
     c.id AS camera_id,
     c.prime AS camera_prime,
     c.name AS camera_name,
@@ -35,8 +41,6 @@ SELECT
 FROM 
     "Event" e
 LEFT JOIN 
-    "Face" f ON e.face_id = f.id
-LEFT JOIN 
     "Camera" c ON e.camera_id = c.id
 LEFT JOIN 
     "Person" p ON e.person_id = p.id
@@ -48,13 +52,10 @@ LIMIT 1
 type GetEventByPrimeRow struct {
 	EventID         int64              `json:"event_id"`
 	EventPrime      string             `json:"event_prime"`
+	FaceThumbnail   string             `json:"face_thumbnail"`
+	FaceScore       float64            `json:"face_score"`
 	HappendAt       pgtype.Timestamptz `json:"happend_at"`
 	EventCreatedAt  pgtype.Timestamptz `json:"event_created_at"`
-	FaceID          *int64             `json:"face_id"`
-	FacePrime       *string            `json:"face_prime"`
-	FaceImage       *string            `json:"face_image"`
-	FaceThumbnail   *string            `json:"face_thumbnail"`
-	FaceScore       *float64           `json:"face_score"`
 	CameraID        *int64             `json:"camera_id"`
 	CameraPrime     *string            `json:"camera_prime"`
 	CameraName      *string            `json:"camera_name"`
@@ -73,13 +74,10 @@ func (q *Queries) GetEventByPrime(ctx context.Context, prime string) (GetEventBy
 	err := row.Scan(
 		&i.EventID,
 		&i.EventPrime,
-		&i.HappendAt,
-		&i.EventCreatedAt,
-		&i.FaceID,
-		&i.FacePrime,
-		&i.FaceImage,
 		&i.FaceThumbnail,
 		&i.FaceScore,
+		&i.HappendAt,
+		&i.EventCreatedAt,
 		&i.CameraID,
 		&i.CameraPrime,
 		&i.CameraName,
@@ -98,13 +96,10 @@ const getEventsList = `-- name: GetEventsList :many
 SELECT 
     e.id AS event_id,
     e.prime AS event_prime,
+    e.thumbnail AS face_thumbnail,
+    e.score AS face_score,
     e.happend_at,
     e.created_at AS event_created_at,
-    f.id AS face_id,
-    f.prime AS face_prime,
-    f.image AS face_image,
-    f.thumbnail AS face_thumbnail,
-    f.score AS face_score,
     c.id AS camera_id,
     c.prime AS camera_prime,
     c.name AS camera_name,
@@ -118,8 +113,6 @@ SELECT
 FROM 
     "Event" e
 LEFT JOIN 
-    "Face" f ON e.face_id = f.id
-LEFT JOIN 
     "Camera" c ON e.camera_id = c.id
 LEFT JOIN 
     "Person" p ON e.person_id = p.id
@@ -131,13 +124,10 @@ LIMIT $1 OFFSET $2
 type GetEventsListRow struct {
 	EventID         int64              `json:"event_id"`
 	EventPrime      string             `json:"event_prime"`
+	FaceThumbnail   string             `json:"face_thumbnail"`
+	FaceScore       float64            `json:"face_score"`
 	HappendAt       pgtype.Timestamptz `json:"happend_at"`
 	EventCreatedAt  pgtype.Timestamptz `json:"event_created_at"`
-	FaceID          *int64             `json:"face_id"`
-	FacePrime       *string            `json:"face_prime"`
-	FaceImage       *string            `json:"face_image"`
-	FaceThumbnail   *string            `json:"face_thumbnail"`
-	FaceScore       *float64           `json:"face_score"`
 	CameraID        *int64             `json:"camera_id"`
 	CameraPrime     *string            `json:"camera_prime"`
 	CameraName      *string            `json:"camera_name"`
@@ -162,13 +152,10 @@ func (q *Queries) GetEventsList(ctx context.Context, limit int32, offset int32) 
 		if err := rows.Scan(
 			&i.EventID,
 			&i.EventPrime,
-			&i.HappendAt,
-			&i.EventCreatedAt,
-			&i.FaceID,
-			&i.FacePrime,
-			&i.FaceImage,
 			&i.FaceThumbnail,
 			&i.FaceScore,
+			&i.HappendAt,
+			&i.EventCreatedAt,
 			&i.CameraID,
 			&i.CameraPrime,
 			&i.CameraName,
