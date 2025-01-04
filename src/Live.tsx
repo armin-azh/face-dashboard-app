@@ -4,6 +4,9 @@ import LastEvents from "./components/LastEvents";
 // Icons
 import { IoIosArrowDropleftCircle } from "react-icons/io";
 import { IoIosArrowDroprightCircle } from "react-icons/io";
+import { CiStreamOn } from "react-icons/ci";
+import {BsCalendar2EventFill} from "react-icons/bs";
+
 
 
 const defaultCameraStreams = [
@@ -47,17 +50,20 @@ export default function Live() {
     };
 
     return (
-        <main className="flex-grow pt-16 bg-gray-100 p-4 grid grid-cols-3 gap-4">
+        <main className="flex-grow pt-16 bg-gray-100 p-4 grid grid-cols-5 gap-2">
             {/* Camera Streams Section */}
-            <div className="col-span-2 bg-white p-4 rounded-lg shadow">
+            <div className="col-span-4 bg-white p-4 rounded-lg shadow">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold text-gray-800">Camera Streams</h2>
+                    <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                        <CiStreamOn className="text-indigo-600"/>
+                        Camera Streams
+                    </h2>
                     <div className="flex items-center gap-2">
                         {gridOptions.map((option, index) => (
                             <button
                                 key={index}
                                 onClick={() => changeGrid(option)}
-                                className={`px-2 py-1 rounded-md text-sm font-medium ${
+                                className={`px-2 py-1 rounded-md text-xs font-medium ${
                                     gridSize.rows === option.rows && gridSize.cols === option.cols
                                         ? "bg-indigo-600 text-white"
                                         : "bg-gray-200 text-gray-800"
@@ -69,7 +75,7 @@ export default function Live() {
                     </div>
                 </div>
                 <div
-                    className="grid gap-2"
+                    className="grid gap-2 overflow-hidden"
                     style={{
                         gridTemplateRows: `repeat(${gridSize.rows}, 1fr)`,
                         gridTemplateColumns: `repeat(${gridSize.cols}, 1fr)`,
@@ -131,7 +137,7 @@ export default function Live() {
             </div>
 
             {/* Last Events Section */}
-            <LastEvents />
+            <LastEvents className='h-full p-0' />
         </main>
     );
 }

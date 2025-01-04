@@ -14,9 +14,14 @@ const lastEvents = [
     "Person 3 updated profile"
 ]; // Example data
 
-export default function LastEvents() {
 
-    return <div className="bg-white p-4 rounded-lg shadow col-span-1 h-96 overflow-y-auto">
+interface Props {
+    className?: string
+}
+
+export default function LastEvents(props:Props) {
+
+    return <div className={`bg-white p-4 rounded-lg shadow col-span-1 h-96 overflow-y-auto list-scroll ${props.className}`}>
         <div className="flex justify-between items-center mb-3 sticky top-0 bg-white z-10 p-4 border-b border-gray-300">
             <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                 <BsCalendar2EventFill className="text-indigo-600"/>
