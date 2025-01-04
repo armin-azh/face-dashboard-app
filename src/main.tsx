@@ -9,6 +9,7 @@ import DashboardLayout from "./components/layouts/DashboardLayout.tsx";
 import Home from './Home.tsx'
 import Personals from "./Personals.tsx";
 import Settings from "./Settings.tsx";
+import Live from "./Live.tsx";
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
@@ -17,6 +18,7 @@ createRoot(document.getElementById('root')!).render(
             <Route index={true} element={<Home/>}/>
             <Route path='/personals' element={<Personals/>}/>
             <Route path='/settings' element={<Settings/>}/>
+            <Route path='/live' element={<Live/>}/>
         </Route>
     </Routes>
   </BrowserRouter>,
