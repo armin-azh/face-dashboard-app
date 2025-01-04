@@ -5,9 +5,6 @@ import LastEvents from "./components/LastEvents";
 import { IoIosArrowDropleftCircle } from "react-icons/io";
 import { IoIosArrowDroprightCircle } from "react-icons/io";
 import { CiStreamOn } from "react-icons/ci";
-import {BsCalendar2EventFill} from "react-icons/bs";
-
-
 
 const defaultCameraStreams = [
     "/sample-video1.mp4",
