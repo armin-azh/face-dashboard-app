@@ -10,6 +10,7 @@ import Home from './Home.tsx'
 import Personals from "./Personals.tsx";
 import Settings from "./Settings.tsx";
 import Live from "./Live.tsx";
+import Events from "./Events.tsx";
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
@@ -19,6 +20,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path='/personals' element={<Personals/>}/>
             <Route path='/settings' element={<Settings/>}/>
             <Route path='/live' element={<Live/>}/>
+            <Route path='/events' element={<Events/>}/>
         </Route>
     </Routes>
   </BrowserRouter>,

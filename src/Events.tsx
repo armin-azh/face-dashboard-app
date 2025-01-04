@@ -7,7 +7,7 @@ const mockData = Array.from({ length: 50 }, (_, index) => ({
     createdAt: new Date().toISOString(),
 }));
 
-export default function Personals() {
+export default function Events() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
 
@@ -32,7 +32,7 @@ export default function Personals() {
 
     return (
         <main className="flex-grow pt-16 bg-gray-50 p-6">
-            <h1 className="text-3xl font-bold mb-6 text-gray-800">Personals Page</h1>
+            <h1 className="text-3xl font-bold mb-6 text-gray-800">Events</h1>
 
             {/* Table */}
             <div className="overflow-x-auto">
