@@ -1,12 +1,19 @@
 import {useState} from "react";
-import { Outlet } from "react-router";
+import {Link, Outlet, useLocation} from "react-router";
 import classNames from "classnames";
 import {Version} from "../../resources/strings.tsx";
+
+// Icons
+import {MdDashboard, MdPeopleAlt} from "react-icons/md";
+import {IoIosSettings} from "react-icons/io";
+import { CgMediaLive } from "react-icons/cg";
+import {BsCalendar2EventFill} from "react-icons/bs";
 
 // Components
 import Notification from "../Notification.tsx";
 
 export default function DashboardLayout() {
+    const location = useLocation();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     const toggleSidebar = () => {
@@ -22,13 +29,50 @@ export default function DashboardLayout() {
             })}
 
         >
-            <div className="p-4 text-lg font-bold">My Sidebar</div>
+
+            <div className="p-4 text-lg font-bold tracking-widest">KnowMe</div>
             <nav className="mt-4">
-                <ul>
-                    <li className="px-4 py-2 hover:bg-gray-700 cursor-pointer">Dashboard</li>
-                    <li className="px-4 py-2 hover:bg-gray-700 cursor-pointer">About</li>
-                    <li className="px-4 py-2 hover:bg-gray-700 cursor-pointer">Services</li>
-                    <li className="px-4 py-2 hover:bg-gray-700 cursor-pointer">Contact</li>
+                <ul className='text-sm'>
+                    <Link
+                        to={'/'}
+                        className={classNames("flex items-center gap-2 px-4 py-2 hover:bg-gray-700 cursor-pointer mb-2", {
+                            "bg-gray-700": location.pathname === "/"
+                        })}
+                    >
+                        <MdDashboard/>Dashboard
+                    </Link>
+                    <Link
+                        to={'/live'}
+                        className={classNames("flex items-center gap-2 px-4 py-2 hover:bg-gray-700 cursor-pointer mb-2", {
+                            "bg-gray-700": location.pathname === "/live"
+                        })}
+                    >
+                        <CgMediaLive/>Live
+                    </Link>
+                    <Link
+                        to={'/personals'}
+                        className={classNames("flex items-center gap-2 px-4 py-2 hover:bg-gray-700 cursor-pointer mb-2", {
+                            "bg-gray-700": location.pathname === "/personals"
+                        })}
+                    >
+                        <MdPeopleAlt/>Personals
+                    </Link>
+                    <Link
+                        to={'/events'}
+                        className={classNames("flex items-center gap-2 px-4 py-2 hover:bg-gray-700 cursor-pointer mb-2", {
+                            "bg-gray-700": location.pathname === "/events"
+                        })}
+                    >
+                        <BsCalendar2EventFill/>Events
+                    </Link>
+                    <Link
+                        to={'/settings'}
+                        className={classNames("flex items-center gap-2 px-4 py-2 hover:bg-gray-700 cursor-pointer", {
+                            "bg-gray-700": location.pathname === "/settings"
+                        })}
+                    >
+                        <IoIosSettings/>Settings
+                    </Link>
                 </ul>
             </nav>
 
