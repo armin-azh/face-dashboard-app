@@ -1,5 +1,6 @@
 import {useState} from "react";
 import {FaUserPlus} from "react-icons/fa";
+import {Link} from "react-router";
 
 // Component
 import NewPersonModal from "./components/NewPersonModal";
@@ -58,6 +59,9 @@ export default function Personals() {
                         <th className="px-6 py-3 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
                             Created At
                         </th>
+                        <th className="px-6 py-3 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
+                            Actions
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
@@ -88,6 +92,14 @@ export default function Personals() {
                                 </td>
                                 <td className="px-6 py-4 border-b border-gray-200 text-gray-600 text-center text-sm">
                                     {new Date(item.created_at).toLocaleString()}
+                                </td>
+                                <td className="px-6 py-4 border-b border-gray-200 text-center text-sm">
+                                    <Link
+                                        to={`/personals/personal/${item.prime}`}
+                                        className="text-blue-600 hover:underline"
+                                    >
+                                        Edit
+                                    </Link>
                                 </td>
                             </tr>
                         ))

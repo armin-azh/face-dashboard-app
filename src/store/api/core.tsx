@@ -5,10 +5,9 @@
 
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
 
-
 // Types
 import {Person} from "../../types/models.tsx";
-import {ListResponse} from "../../types/response.tsx";
+import {ListResponse, DataResponse} from "../../types/response.tsx";
 
 const baseQuery = fetchBaseQuery(
     {
@@ -29,6 +28,12 @@ export const coreApi = createApi({
             }
         }),
 
+        personByPrime: builder.query<DataResponse<Person>,{prime:string}>({
+           query({prime}) {
+               return {url:`/persons/person/${prime}`}
+           }
+        }),
+
         createPerson: builder.mutation({
             query: ({data})=>(
                 {
@@ -37,7 +42,8 @@ export const coreApi = createApi({
                     body: data
                 }
             )
-        })
+        }),
+
 
     })
 })
@@ -47,5 +53,6 @@ export const {
     useCreatePersonMutation,
 
     // Query
-    useListPersonsQuery
+    useListPersonsQuery,
+    usePersonByPrimeQuery
 } = coreApi;

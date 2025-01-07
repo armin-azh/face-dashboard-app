@@ -10,3 +10,9 @@ export interface ListResponse<T>{
     page_size: number;
     results: T[]
 }
+
+export interface DataResponse<T>{
+    message: string;
+    code: string;
+    data: T
+}
