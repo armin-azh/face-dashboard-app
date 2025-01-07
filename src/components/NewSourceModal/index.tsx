@@ -7,7 +7,7 @@ interface NewPersonModalProps {
     setIsModalOpen: (isOpen: boolean) => void;
 }
 
-export default function NewPersonModal({setIsModalOpen}: NewPersonModalProps) {
+export default function NewSourceModal({setIsModalOpen}: NewPersonModalProps) {
     const [step, setStep] = React.useState(1);
 
     const handleNext = () => setStep((prev) => prev + 1);
