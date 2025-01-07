@@ -6,9 +6,13 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
 
 
+// Types
+import {Person} from "../../types/models.tsx";
+import {ListResponse} from "../../types/response.tsx";
+
 const baseQuery = fetchBaseQuery(
     {
-        baseUrl: `http://localhost:8000/api/v1/`,
+        baseUrl: `http://localhost:8080/api/v1/`,
         credentials: 'include'
     }
 )
@@ -19,21 +23,29 @@ export const coreApi = createApi({
     refetchOnReconnect: true,
     endpoints:builder => ({
 
-        newContact: builder.mutation({
-            query:({data})=>(
+        listPersons: builder.query<ListResponse<Person>, void>({
+            query: ()=>{
+                return {url:'/persons'}
+            }
+        }),
+
+        createPerson: builder.mutation({
+            query: ({data})=>(
                 {
-                    url: `/contact/`,
+                    url: '/persons',
                     method: 'POST',
                     body: data
                 }
             )
-        }),
+        })
 
     })
 })
 
 export const {
     // Mutation
+    useCreatePersonMutation,
 
     // Query
+    useListPersonsQuery
 } = coreApi;

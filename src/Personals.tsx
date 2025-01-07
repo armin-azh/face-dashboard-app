@@ -4,36 +4,24 @@ import {FaUserPlus} from "react-icons/fa";
 // Component
 import NewPersonModal from "./components/NewPersonModal";
 
-const mockData = Array.from({length: 50}, (_, index) => ({
-    id: index + 1,
-    name: `Person ${index + 1}`,
-    numberOfFaces: Math.floor(Math.random() * 10) + 1,
-    createdAt: new Date().toISOString(),
-}));
+// Hooks
+import {useListPersonsQuery} from "./store/api/core.tsx";
 
 export default function Personals() {
-    const [currentPage, setCurrentPage] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const itemsPerPage = 5;
 
-    const totalPages = Math.ceil(mockData.length / itemsPerPage);
+    const {data} = useListPersonsQuery();
 
-    const currentData = mockData.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
 
     const goToPreviousPage = () => {
-        if (currentPage > 1) {
-            setCurrentPage((prev) => prev - 1);
-        }
+
     };
 
     const goToNextPage = () => {
-        if (currentPage < totalPages) {
-            setCurrentPage((prev) => prev + 1);
-        }
+
     };
+
+    console.log(data);
 
     return (
         <main className="flex-grow pt-16 bg-gray-50 p-6">
@@ -73,35 +61,37 @@ export default function Personals() {
                     </tr>
                     </thead>
                     <tbody>
-                    {currentData.map((item, index) => (
-                        <tr
-                            key={item.id}
-                            className={`${
-                                index % 2 === 0 ? "bg-gray-100" : "bg-white"
-                            } hover:bg-blue-50 transition-all`}
-                        >
-                            {/* Thumbnail Column */}
-                            <td className="px-6 py-4 border-b border-gray-200 text-center">
-                                <img
-                                    src="/default-person.jpg"
-                                    alt="Thumbnail"
-                                    className="w-16 h-16 rounded-full object-cover mx-auto shadow-sm"
-                                />
-                            </td>
-                            <td className="px-6 py-4 border-b border-gray-200 text-blue-700 font-medium text-center">
-                                {item.id}
-                            </td>
-                            <td className="px-6 py-4 border-b border-gray-200 text-gray-800 font-medium text-center">
-                                {item.name}
-                            </td>
-                            <td className="px-6 py-4 border-b border-gray-200 text-gray-600 text-center">
-                                {item.numberOfFaces}
-                            </td>
-                            <td className="px-6 py-4 border-b border-gray-200 text-gray-600 text-center">
-                                {new Date(item.createdAt).toLocaleString()}
-                            </td>
-                        </tr>
-                    ))}
+                    {data && (
+                        data.results.map((item, index) => (
+                            <tr
+                                key={item.id}
+                                className={`${
+                                    index % 2 === 0 ? "bg-gray-100" : "bg-white"
+                                } hover:bg-blue-50 transition-all`}
+                            >
+                                {/* Thumbnail Column */}
+                                <td className="px-6 py-4 border-b border-gray-200 text-center">
+                                    <img
+                                        src="/default-person.jpg"
+                                        alt="Thumbnail"
+                                        className="w-16 h-16 rounded-full object-cover mx-auto shadow-sm"
+                                    />
+                                </td>
+                                <td className="px-6 py-4 border-b border-gray-200 text-blue-700 font-medium text-center text-sm">
+                                    {item.prime}
+                                </td>
+                                <td className="px-6 py-4 border-b border-gray-200 text-gray-800 font-medium text-center capitalize text-sm">
+                                    {item.first_name} {item.last_name}
+                                </td>
+                                <td className="px-6 py-4 border-b border-gray-200 text-gray-600 text-center text-sm">
+                                    0
+                                </td>
+                                <td className="px-6 py-4 border-b border-gray-200 text-gray-600 text-center text-sm">
+                                    {new Date(item.created_at).toLocaleString()}
+                                </td>
+                            </tr>
+                        ))
+                    )}
                     </tbody>
                 </table>
             </div>
@@ -110,17 +100,17 @@ export default function Personals() {
             <div className="mt-6 flex justify-between items-center">
                 <button
                     className="px-5 py-2 bg-blue-200 text-blue-800 rounded-lg hover:bg-blue-300 disabled:opacity-50 transition font-medium shadow-sm"
-                    disabled={currentPage === 1}
+                    // disabled={currentPage === 1}
                     onClick={goToPreviousPage}
                 >
                     Previous
                 </button>
                 <span className="text-gray-700 font-semibold text-lg">
-                    Page {currentPage} of {totalPages}
+                    Page {0} of {0}
                 </span>
                 <button
                     className="px-5 py-2 bg-blue-200 text-blue-800 rounded-lg hover:bg-blue-300 disabled:opacity-50 transition font-medium shadow-sm"
-                    disabled={currentPage === totalPages}
+                    // disabled={currentPage === totalPages}
                     onClick={goToNextPage}
                 >
                     Next
