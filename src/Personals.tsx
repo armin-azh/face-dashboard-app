@@ -1,6 +1,9 @@
 import {useState} from "react";
 import {FaUserPlus} from "react-icons/fa";
 
+// Component
+import NewPersonModal from "./components/NewPersonModal";
+
 const mockData = Array.from({length: 50}, (_, index) => ({
     id: index + 1,
     name: `Person ${index + 1}`,
@@ -10,6 +13,7 @@ const mockData = Array.from({length: 50}, (_, index) => ({
 
 export default function Personals() {
     const [currentPage, setCurrentPage] = useState(1);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const itemsPerPage = 5;
 
     const totalPages = Math.ceil(mockData.length / itemsPerPage);
@@ -37,6 +41,7 @@ export default function Personals() {
                 <h1 className="text-2xl font-semibold text-blue-700">Personals Page</h1>
                 <button
                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition flex items-center gap-2 text-sm shadow-md"
+                    onClick={() => setIsModalOpen(true)}
                 >
                     <i className="text-xl">
                         <FaUserPlus/>
@@ -121,6 +126,11 @@ export default function Personals() {
                     Next
                 </button>
             </div>
+
+            {/* Modal */}
+            {isModalOpen && (
+                <NewPersonModal setIsModalOpen={setIsModalOpen}/>
+            )}
         </main>
     );
 }
