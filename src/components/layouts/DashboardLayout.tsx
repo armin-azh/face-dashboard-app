@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {Link, Outlet, useLocation} from "react-router";
 import classNames from "classnames";
 import {Version} from "../../resources/strings.tsx";
@@ -14,7 +14,14 @@ import Notification from "../Notification.tsx";
 
 export default function DashboardLayout() {
     const location = useLocation();
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() => {
+        const cachedState = localStorage.getItem("isSidebarOpen");
+        return cachedState !== null ? JSON.parse(cachedState) : true;
+    });
+
+    useEffect(() => {
+        localStorage.setItem("isSidebarOpen", JSON.stringify(isSidebarOpen));
+    }, [isSidebarOpen]);
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
