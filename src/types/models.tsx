@@ -13,4 +13,12 @@ interface CameraStats {
     total_cameras: number;
 }
 
-export type { Person, CameraStats };
+interface EventStats {
+    total_events: number;
+}
+
+interface PersonStats {
+    total_persons: number;
+}
+
+export type { Person, CameraStats, EventStats, PersonStats };
