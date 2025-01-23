@@ -21,4 +21,16 @@ interface PersonStats {
     total_persons: number;
 }
 
-export type { Person, CameraStats, EventStats, PersonStats };
+interface EventStatusReport{
+    known_count: number;
+    unknown_count: number;
+}
+
+interface EventHistory{
+    day_name: string;
+    known_count: number;
+    unknown_count: number;
+    total_count: number;
+}
+
+export type { Person, CameraStats, EventStats, PersonStats, EventStatusReport, EventHistory};

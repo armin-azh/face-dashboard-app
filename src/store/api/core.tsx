@@ -6,7 +6,7 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
 
 // Types
-import {Person, CameraStats, EventStats, PersonStats} from "../../types/models.tsx";
+import {Person, CameraStats, EventStats, PersonStats, EventStatusReport, EventHistory} from "../../types/models.tsx";
 import {ListResponse, DataResponse} from "../../types/response.tsx";
 
 const baseQuery = fetchBaseQuery(
@@ -55,6 +55,16 @@ export const coreApi = createApi({
            }
         }),
 
+        // get Event Status Report
+        getEventStatusReport: builder.query<DataResponse<EventStatusReport>,void>({
+            query: ()=>{return {url:'/events/statusReport'}}
+        }),
+
+        // Get Event Week History
+        getEventWeekHistory: builder.query<DataResponse<EventHistory[]>,void>({
+            query: ()=>{return {url:'/events/weekHistory'}}
+        }),
+
         createPerson: builder.mutation({
             query: ({data})=>(
                 {
@@ -79,4 +89,6 @@ export const {
     useGetCameraStatsQuery,
     useGetEventStatsQuery,
     useGetPersonStatsQuery,
+    useGetEventStatusReportQuery,
+    useGetEventWeekHistoryQuery
 } = coreApi;

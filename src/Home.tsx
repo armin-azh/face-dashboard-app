@@ -1,6 +1,6 @@
 
 // Components
-import AnalyticsSummeryCard from "./components/AnalyticsSummeryCard.tsx";
+import AnalyticsSummeryCard from "./components/AnalyticsSummeryCard";
 import LastEvents from "./components/LastEvents.tsx";
 import Overview from "./components/Overview";
 
