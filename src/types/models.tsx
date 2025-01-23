@@ -9,4 +9,8 @@ interface Person {
 }
 
 
-export type { Person };
+interface CameraStats {
+    total_cameras: number;
+}
+
+export type { Person, CameraStats };

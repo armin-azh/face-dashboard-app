@@ -6,7 +6,7 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
 
 // Types
-import {Person} from "../../types/models.tsx";
+import {Person, CameraStats} from "../../types/models.tsx";
 import {ListResponse, DataResponse} from "../../types/response.tsx";
 
 const baseQuery = fetchBaseQuery(
@@ -34,6 +34,12 @@ export const coreApi = createApi({
            }
         }),
 
+        getCameraStats: builder.query<DataResponse<CameraStats>, void>({
+            query:()=>{
+                return {url: '/cameras/stats'}
+            }
+        }),
+
         createPerson: builder.mutation({
             query: ({data})=>(
                 {
@@ -54,5 +60,6 @@ export const {
 
     // Query
     useListPersonsQuery,
-    usePersonByPrimeQuery
+    usePersonByPrimeQuery,
+    useGetCameraStatsQuery
 } = coreApi;
