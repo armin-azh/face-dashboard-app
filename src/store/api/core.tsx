@@ -6,13 +6,26 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
 
 // Types
-import {Person, CameraStats, EventStats, PersonStats, EventStatusReport, EventHistory} from "../../types/models.tsx";
+import {
+    Person,
+    CameraStats,
+    EventStats,
+    PersonStats,
+    EventStatusReport,
+    EventHistory,
+    Camera
+} from "../../types/models.tsx";
 import {ListResponse, DataResponse} from "../../types/response.tsx";
 
 const baseQuery = fetchBaseQuery(
     {
         baseUrl: `http://localhost:8080/api/v1/`,
-        credentials: 'include'
+        credentials: 'include',
+        prepareHeaders: (headers) => {
+            headers.set('Content-Type', 'application/json'); // Add this line
+            return headers;
+        },
+
     }
 )
 
@@ -34,12 +47,24 @@ export const coreApi = createApi({
            }
         }),
 
+        // Camera List
+        getCameraList: builder.query<ListResponse<Camera>,void>({
+            query: ()=>({url:'/cameras'})
+        }),
+
+        // Get Camera by I'd
+        getCameraByPrime: builder.query<DataResponse<Camera>,{CameraId:string}>({
+            query: ({CameraId})=>({url:`/cameras/camera/${CameraId}`})
+        }),
+
         // Get Camera Stats
         getCameraStats: builder.query<DataResponse<CameraStats>, void>({
             query:()=>{
                 return {url: '/cameras/stats'}
             }
         }),
+
+        // Get Camera
 
         // Get Event Stats
         getEventStats: builder.query<DataResponse<EventStats>, void>({
@@ -65,6 +90,7 @@ export const coreApi = createApi({
             query: ()=>{return {url:'/events/weekHistory'}}
         }),
 
+        // Create New Person
         createPerson: builder.mutation({
             query: ({data})=>(
                 {
@@ -76,12 +102,51 @@ export const coreApi = createApi({
         }),
 
 
+        // Create New Enrollment for a person
+        createEnrollment: builder.mutation({
+           query: ({data,personId})=> (
+               {
+                   url: `/persons/person/${personId}/enrollments`,
+                   method: 'POST',
+                   body: data
+               }
+           )
+        }),
+
+        // create camera
+        createCamera: builder.mutation({
+            query: ({data})=>({
+                url: '/cameras',
+                method: 'POST',
+                body: data
+            })
+        }),
+
+        deleteCamera: builder.mutation({
+            query: ({cameraId})=>({
+                url: `/cameras/camera/${cameraId}`,
+                method: 'DELETE',
+            })
+        }),
+
+        reloadCamera: builder.mutation({
+            query: ({cameraId})=> ({
+                url: `/cameras/camera/${cameraId}/reload`,
+                method: 'GET'
+            })
+        })
+
+
     })
 })
 
 export const {
     // Mutation
     useCreatePersonMutation,
+    useCreateEnrollmentMutation,
+    useCreateCameraMutation,
+    useDeleteCameraMutation,
+    useReloadCameraMutation,
 
     // Query
     useListPersonsQuery,
@@ -90,5 +155,7 @@ export const {
     useGetEventStatsQuery,
     useGetPersonStatsQuery,
     useGetEventStatusReportQuery,
-    useGetEventWeekHistoryQuery
+    useGetEventWeekHistoryQuery,
+    useGetCameraByPrimeQuery,
+    useGetCameraListQuery,
 } = coreApi;

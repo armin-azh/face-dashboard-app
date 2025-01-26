@@ -12,7 +12,7 @@ export default function Personal() {
     // const {data: faces, isLoading: isFacesLoading} = useListFacesQuery(id); // Replace with the appropriate hook
 
     console.log(person)
-    if (isPersonLoading) {
+    if (isPersonLoading || !person) {
         return <div>Loading...</div>;
     }
 

@@ -1,17 +1,32 @@
 import React from "react";
-import {AiOutlineVideoCamera} from "react-icons/ai";
-import {BsCameraVideo} from "react-icons/bs";
-import {FaImages} from "react-icons/fa";
+import {useParams} from "react-router";
+
+// Components
+import SourceType from "./SourceType";
+
+// Hooks
+import useCreateEnrollment from "../../hooks/use-create-enrollment.tsx";
+
 
 interface NewPersonModalProps {
     setIsModalOpen: (isOpen: boolean) => void;
 }
 
 export default function NewSourceModal({setIsModalOpen}: NewPersonModalProps) {
+    const {prime} = useParams(); // Fetch the ID from the route (e.g., /personal/:id)
     const [step, setStep] = React.useState(1);
 
-    const handleNext = () => setStep((prev) => prev + 1);
+
+    const {setForm: setEnrollmentForm, create} = useCreateEnrollment();
+
+    const handleNext = () => {
+        if(step === 1){
+            create(prime as string, {});
+        }
+        setStep((prev) => prev + 1);
+    };
     const handleBack = () => setStep((prev) => Math.max(prev - 1, 1));
+
 
     const stepLabels = ["Select Data Source", "Number of Faces", "Review"];
 
@@ -50,55 +65,9 @@ export default function NewSourceModal({setIsModalOpen}: NewPersonModalProps) {
 
                 <form>
                     {step === 1 && (
-                        <div className="mb-4">
-                            <p className="block text-gray-700 font-medium mb-2">
-                                Choose the data source for the person:
-                            </p>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <label
-                                    className="flex flex-col items-center bg-gray-100 p-4 rounded-lg shadow-md hover:bg-gray-200 transition cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="dataSource"
-                                        value="recording"
-                                        className="hidden"
-                                    />
-                                    <div
-                                        className="w-12 h-12 bg-blue-500 text-white flex items-center justify-center rounded-full mb-2">
-                                        <i className="react-icons/ai"><AiOutlineVideoCamera/></i>
-                                    </div>
-                                    <span className="text-gray-700 font-medium">Recording</span>
-                                </label>
-                                <label
-                                    className="flex flex-col items-center bg-gray-100 p-4 rounded-lg shadow-md hover:bg-gray-200 transition cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="dataSource"
-                                        value="uploadVideo"
-                                        className="hidden"
-                                    />
-                                    <div
-                                        className="w-12 h-12 bg-blue-500 text-white flex items-center justify-center rounded-full mb-2">
-                                        <i className="react-icons/bs"><BsCameraVideo/></i>
-                                    </div>
-                                    <span className="text-gray-700 font-medium">Upload Video</span>
-                                </label>
-                                <label
-                                    className="flex flex-col items-center bg-gray-100 p-4 rounded-lg shadow-md hover:bg-gray-200 transition cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="dataSource"
-                                        value="uploadImages"
-                                        className="hidden"
-                                    />
-                                    <div
-                                        className="w-12 h-12 bg-blue-500 text-white flex items-center justify-center rounded-full mb-2">
-                                        <i className="react-icons/fa"><FaImages/></i>
-                                    </div>
-                                    <span className="text-gray-700 font-medium">Upload Images</span>
-                                </label>
-                            </div>
-                        </div>
+                        <SourceType setSource={(source: string)=>{
+                            setEnrollmentForm({type: source})
+                        }}/>
                     )}
                     {step === 2 && (
                         <div className="mb-4">

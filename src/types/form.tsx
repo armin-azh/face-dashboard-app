@@ -5,4 +5,10 @@ export interface PersonForm{
     last_name: string;
 }
 
+export interface PersonEnrollmentCreateForm {
+    type :string;
+}
+
 export const initPersonForm=()=>({first_name:'',last_name:''});
+
+export const initPersonEnrollmentCreateForm= () =>({'type':''});

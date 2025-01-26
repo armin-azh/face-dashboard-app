@@ -8,6 +8,8 @@ import {MdDashboard, MdPeopleAlt} from "react-icons/md";
 import {IoIosSettings} from "react-icons/io";
 import { CgMediaLive } from "react-icons/cg";
 import {BsCalendar2EventFill} from "react-icons/bs";
+import { GiCctvCamera } from "react-icons/gi";
+
 
 // Components
 import Notification from "../Notification.tsx";
@@ -55,6 +57,14 @@ export default function DashboardLayout() {
                         })}
                     >
                         <CgMediaLive/>Live
+                    </Link>
+                    <Link
+                        to={'/cameras'}
+                        className={classNames("flex items-center gap-2 px-4 py-2 hover:bg-gray-700 cursor-pointer mb-2", {
+                            "bg-gray-700": location.pathname === "/cameras"
+                        })}
+                    >
+                        <GiCctvCamera/>camera
                     </Link>
                     <Link
                         to={'/personals'}

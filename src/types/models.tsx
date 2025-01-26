@@ -33,4 +33,13 @@ interface EventHistory{
     total_count: number;
 }
 
-export type { Person, CameraStats, EventStats, PersonStats, EventStatusReport, EventHistory};
+interface Camera {
+    id: number;
+    prime: string;
+    name: string;
+    type: string;
+    on_demand: boolean;
+    created_at: string;
+}
+
+export type { Camera, Person, CameraStats, EventStats, PersonStats, EventStatusReport, EventHistory};
