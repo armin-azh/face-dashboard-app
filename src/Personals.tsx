@@ -4,6 +4,7 @@ import {Link} from "react-router";
 
 // Component
 import NewPersonModal from "./components/NewPersonModal";
+import Loading from "./components/Loading.tsx";
 
 // Hooks
 import {useListPersonsQuery} from "./store/api/core.tsx";
@@ -11,7 +12,7 @@ import {useListPersonsQuery} from "./store/api/core.tsx";
 export default function Personals() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const {data} = useListPersonsQuery();
+    const {data, isLoading} = useListPersonsQuery();
 
 
     const goToPreviousPage = () => {
@@ -22,7 +23,9 @@ export default function Personals() {
 
     };
 
-    console.log(data);
+    if (isLoading) {
+        return <Loading/>
+    }
 
     return (
         <main className="flex-grow pt-16 bg-gray-50 p-6">
