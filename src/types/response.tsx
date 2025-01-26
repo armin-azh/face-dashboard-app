@@ -8,6 +8,7 @@ export interface Response{
 export interface ListResponse<T>{
     page: number;
     page_size: number;
+    total_pages: number;
     results: T[]
 }
 

@@ -16,6 +16,7 @@ import {
     Camera
 } from "../../types/models.tsx";
 import {ListResponse, DataResponse} from "../../types/response.tsx";
+import {ListArgs} from "../../types/args.tsx";
 
 const baseQuery = fetchBaseQuery(
     {
@@ -48,8 +49,8 @@ export const coreApi = createApi({
         }),
 
         // Camera List
-        getCameraList: builder.query<ListResponse<Camera>,void>({
-            query: ()=>({url:'/cameras'})
+        getCameraList: builder.query<ListResponse<Camera>,ListArgs>({
+            query: ({page, page_size}) => ({url: `/cameras?page=${page}&page_size=${page_size}`})
         }),
 
         // Get Camera by I'd

@@ -5,3 +5,9 @@ export interface HookArgs {
     onError?: ()=> void;
     onFinally?: ()=>void;
 }
+
+
+export interface ListArgs {
+    page: number;
+    page_size: number
+}
