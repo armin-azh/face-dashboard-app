@@ -1,10 +1,11 @@
-import React,{useEffect,createRef} from "react";
+import React, {useEffect, createRef} from "react";
 import Hls from 'hls.js';
 
-interface Props{
+interface Props {
     sourceId: string;
 }
-function HLS(props:Props) {
+
+function HLS(props: Props) {
 
     const videoRef = createRef<HTMLVideoElement>();
 
@@ -18,14 +19,13 @@ function HLS(props:Props) {
             const hls = new Hls()
             hls.loadSource(url)
             hls.attachMedia(video)
-            console.log("yes")
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
             video.src = url
         }
     }, [videoRef]);
 
 
-    return <video className='aspect-video' ref={videoRef} autoPlay={true}/>
+    return <video className='aspect-video w-full h-full' ref={videoRef} autoPlay={true}/>
 
 
 }
