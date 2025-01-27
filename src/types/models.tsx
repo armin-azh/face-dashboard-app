@@ -38,6 +38,7 @@ interface Camera {
     prime: string;
     name: string;
     type: string;
+    url: string;
     on_demand: boolean;
     created_at: string;
 }

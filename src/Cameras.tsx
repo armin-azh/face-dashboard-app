@@ -91,7 +91,7 @@ export default function Cameras() {
                                     {item.type}
                                 </td>
                                 <td className="px-6 py-4 border-b border-gray-200 text-gray-600 text-center text-sm">
-                                    http://localhost:12
+                                    {item.url}
                                 </td>
                                 <td className="px-6 py-4 border-b border-gray-200 text-blue-700 font-medium text-center text-sm flex justify-center items-center">
                                     {item.on_demand ? <FaCircleCheck className='text-green-500'/> :

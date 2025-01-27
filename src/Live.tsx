@@ -6,6 +6,10 @@ import { IoIosArrowDropleftCircle } from "react-icons/io";
 import { IoIosArrowDroprightCircle } from "react-icons/io";
 import { CiStreamOn } from "react-icons/ci";
 
+// Hooks
+import {useGetCameraListQuery} from "./store/api/core.tsx";
+import classNames from "classnames";
+
 const defaultCameraStreams = [
     "/sample-video1.mp4",
     "/sample-video2.mp4",
@@ -23,6 +27,11 @@ export default function Live() {
     const [gridSize, setGridSize] = useState({ rows: 1, cols: 1 }); // Default grid size
     const [cameraStreams] = useState(defaultCameraStreams);
     const [activeIndex, setActiveIndex] = useState(0); // Tracks active camera index for 1x1 grid
+    const [sourceType, setSourceType] = useState<string>("hls");
+
+    const {data} = useGetCameraListQuery({page:1, page_size:100});
+
+    console.log(data)
 
     const gridOptions = [
         { rows: 1, cols: 1 },
@@ -55,21 +64,44 @@ export default function Live() {
                         <CiStreamOn className="text-indigo-600"/>
                         Camera Streams
                     </h2>
-                    <div className="flex items-center gap-2">
-                        {gridOptions.map((option, index) => (
+                    <div>
+                        <div className="flex items-center gap-2">
+                            {gridOptions.map((option, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => changeGrid(option)}
+                                    className={`px-2 py-1 rounded-md text-xs font-medium ${
+                                        gridSize.rows === option.rows && gridSize.cols === option.cols
+                                            ? "bg-indigo-600 text-white"
+                                            : "bg-gray-200 text-gray-800"
+                                    }`}
+                                >
+                                    {option.rows}x{option.cols}
+                                </button>
+                            ))}
                             <button
-                                key={index}
-                                onClick={() => changeGrid(option)}
-                                className={`px-2 py-1 rounded-md text-xs font-medium ${
-                                    gridSize.rows === option.rows && gridSize.cols === option.cols
-                                        ? "bg-indigo-600 text-white"
-                                        : "bg-gray-200 text-gray-800"
-                                }`}
+                                className={classNames('px-2 py-1 rounded-md text-xs font-medium',
+                                    {
+                                        'bg-indigo-600 text-white': sourceType === 'webrtc',
+                                        'bg-gray-200 text-gray-800 hover:bg-gray-300': sourceType !== 'webrtc'
+                                    })}
+                                onClick={() => setSourceType("webrtc")}
                             >
-                                {option.rows}x{option.cols}
+                                WebRTC
                             </button>
-                        ))}
+                            <button
+                                className={classNames('px-2 py-1 rounded-md text-xs font-medium',
+                                    {
+                                        'bg-indigo-600 text-white': sourceType === 'hls',
+                                        'bg-gray-200 text-gray-800 hover:bg-gray-300': sourceType !== 'hls'
+                                    })}
+                                onClick={() => setSourceType("hls")}
+                            >
+                                HLS
+                            </button>
+                        </div>
                     </div>
+                    
                 </div>
                 <div
                     className="grid gap-2 overflow-hidden"
