@@ -115,7 +115,7 @@ export default function Cameras() {
             </div>
 
             {/* Pagination Controls */}
-            {data && (
+            {data && data.total_pages !==0 && (
                 <div className="mt-6 flex justify-between items-center">
                     <button
                         className="px-5 py-2 bg-blue-200 text-blue-800 rounded-lg hover:bg-blue-300 disabled:opacity-50 transition font-medium shadow-sm"
