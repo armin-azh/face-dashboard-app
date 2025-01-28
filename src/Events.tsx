@@ -1,65 +1,57 @@
 import { useState } from "react";
+import {useSearchParams} from "react-router";
+import {nanoid} from "@reduxjs/toolkit";
 
-const mockData = Array.from({ length: 50 }, (_, index) => ({
-    id: index + 1,
-    name: `Person ${index + 1}`,
-    numberOfFaces: Math.floor(Math.random() * 10) + 1,
-    createdAt: new Date().toISOString(),
-}));
+// Components
+import Loading from "./components/Loading.tsx";
+
+// Hooks
+import {useGetEventListQuery} from "./store/api/core.tsx";
+
 
 export default function Events() {
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
+    const [searchParams] = useSearchParams();
 
-    const totalPages = Math.ceil(mockData.length / itemsPerPage);
+    const [page, setPage] = useState<number>(parseInt(searchParams.get("page") ?? "1", 10));
+    const page_size = parseInt(searchParams.get("page_size") ?? "10", 10);
 
-    const currentData = mockData.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
+    const {data, isLoading} = useGetEventListQuery({page,page_size});
 
-    const goToPreviousPage = () => {
-        if (currentPage > 1) {
-            setCurrentPage((prev) => prev - 1);
-        }
-    };
 
-    const goToNextPage = () => {
-        if (currentPage < totalPages) {
-            setCurrentPage((prev) => prev + 1);
-        }
-    };
+    if (isLoading) {
+        return <Loading/>
+    }
 
     return (
         <main className="flex-grow pt-16 bg-gray-50 p-6">
-            <h1 className="text-3xl font-bold mb-6 text-gray-800">Events</h1>
+            <h1 className="text-2xl font-semibold text-blue-700 mb-6">Events</h1>
 
             {/* Table */}
             <div className="overflow-x-auto">
                 <table className="w-full table-auto border-collapse bg-white shadow-lg rounded-lg">
                     <thead className="bg-gray-200">
                     <tr>
-                        <th className="px-4 py-2 border-b border-gray-300 font-semibold text-center text-gray-700">
+                        <th className="px-6 py-3 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
                             Thumbnail
                         </th>
-                        <th className="px-4 py-2 border-b border-gray-300 font-semibold text-center text-gray-700">
+                        <th className="px-6 py-3 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
                             ID
                         </th>
-                        <th className="px-4 py-2 border-b border-gray-300 font-semibold text-center text-gray-700">
-                            Name
+                        <th className="px-6 py-3 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
+                            Person
                         </th>
-                        <th className="px-4 py-2 border-b border-gray-300 font-semibold text-center text-gray-700">
-                            Number of Faces
+                        <th className="px-6 py-3 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
+                            Camera
                         </th>
-                        <th className="px-4 py-2 border-b border-gray-300 font-semibold text-center text-gray-700">
+                        <th className="px-6 py-3 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
                             Created At
                         </th>
                     </tr>
                     </thead>
                     <tbody>
-                    {currentData.map((item, index) => (
+                    { data && data.results.map((item, index) => (
                         <tr
-                            key={item.id}
+                            key={nanoid()}
                             className={`${
                                 index % 2 === 0 ? "bg-gray-100" : "bg-white"
                             } hover:bg-gray-50`}
@@ -73,16 +65,16 @@ export default function Events() {
                                 />
                             </td>
                             <td className="px-4 py-3 border-b border-gray-200 text-gray-700 text-center">
-                                {item.id}
+                                {item.event_id}
                             </td>
                             <td className="px-4 py-3 border-b border-gray-200 text-gray-700 text-center">
-                                {item.name}
+                                {item.person_first_name && item.person_last_name? item.person_first_name + " " + item.person_last_name : "Unknown"}
                             </td>
                             <td className="px-4 py-3 border-b border-gray-200 text-gray-700 text-center">
-                                {item.numberOfFaces}
+                                {item.camera_name}
                             </td>
                             <td className="px-4 py-3 border-b border-gray-200 text-gray-700 text-center">
-                                {new Date(item.createdAt).toLocaleString()}
+                                {new Date(item.happend_at).toLocaleString()}
                             </td>
                         </tr>
                     ))}
@@ -91,25 +83,36 @@ export default function Events() {
             </div>
 
             {/* Pagination Controls */}
-            <div className="mt-4 flex justify-between items-center">
-                <button
-                    className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 transition"
-                    disabled={currentPage === 1}
-                    onClick={goToPreviousPage}
-                >
-                    Previous
-                </button>
-                <span className="text-gray-700 font-medium">
-          Page {currentPage} of {totalPages}
-        </span>
-                <button
-                    className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 transition"
-                    disabled={currentPage === totalPages}
-                    onClick={goToNextPage}
-                >
-                    Next
-                </button>
-            </div>
+            {data && data.total_pages !==0 && (
+                <div className="mt-6 flex justify-between items-center">
+                    <button
+                        className="px-5 py-2 bg-blue-200 text-blue-800 rounded-lg hover:bg-blue-300 disabled:opacity-50 transition font-medium shadow-sm text-sm"
+                        disabled={data.page === 1}
+                        onClick={()=>{
+                            if (data.page > 1){
+                                setPage(prevState => prevState - 1);
+                            }
+                        }
+                        }
+                    >
+                        Previous
+                    </button>
+                    <span className="text-gray-700 font-semibold text-sm">
+                    Page {data.page} of {data.total_pages}
+                </span>
+                    <button
+                        className="px-5 py-2 bg-blue-200 text-blue-800 rounded-lg hover:bg-blue-300 disabled:opacity-50 transition font-medium shadow-sm text-sm"
+                        disabled={data.page === data.total_pages}
+                        onClick={()=>{
+                            if(data.page < data.total_pages){
+                                setPage(prevState => prevState + 1);
+                            }}
+                        }
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
         </main>
     );
 }

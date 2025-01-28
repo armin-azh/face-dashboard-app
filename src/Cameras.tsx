@@ -118,7 +118,7 @@ export default function Cameras() {
             {data && data.total_pages !==0 && (
                 <div className="mt-6 flex justify-between items-center">
                     <button
-                        className="px-5 py-2 bg-blue-200 text-blue-800 rounded-lg hover:bg-blue-300 disabled:opacity-50 transition font-medium shadow-sm"
+                        className="px-5 py-2 bg-blue-200 text-blue-800 rounded-lg hover:bg-blue-300 disabled:opacity-50 transition font-medium shadow-sm text-sm"
                         disabled={data.page === 1}
                         onClick={()=>{
                             if (data.page > 1){
@@ -129,17 +129,17 @@ export default function Cameras() {
                     >
                         Previous
                     </button>
-                    <span className="text-gray-700 font-semibold text-lg">
+                    <span className="text-gray-700 font-semibold text-sm">
                     Page {data.page} of {data.total_pages}
                 </span>
                     <button
-                        className="px-5 py-2 bg-blue-200 text-blue-800 rounded-lg hover:bg-blue-300 disabled:opacity-50 transition font-medium shadow-sm"
+                        className="px-5 py-2 bg-blue-200 text-blue-800 rounded-lg hover:bg-blue-300 disabled:opacity-50 transition font-medium shadow-sm text-sm"
                         disabled={data.page === data.total_pages}
                         onClick={()=>{
                             if(data.page < data.total_pages){
                                 setPage(prevState => prevState + 1);
                             }}
-                        }
+                        } text-sm
                     >
                         Next
                     </button>
