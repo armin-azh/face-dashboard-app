@@ -8,6 +8,24 @@ interface Person {
     created_at: string
 }
 
+interface Event {
+    event_id: number;
+    event_prime: number;
+    face_thumbnail: string;
+    face_score: number;
+    happend_at: string;
+    event_created_at: string;
+    camera_id: number | null;
+    camera_prime: string | null;
+    camera_name: string | null;
+    camera_type: string | null;
+    camera_url: string | null;
+    camera_on_demand: boolean | null;
+    person_id: number | null;
+    person_prime: string | null;
+    person_first_name: string | null;
+    person_last_name: string | null;
+}
 
 interface CameraStats {
     total_cameras: number;
@@ -26,6 +44,7 @@ interface EventStatusReport{
     unknown_count: number;
 }
 
+
 interface EventHistory{
     day_name: string;
     known_count: number;
@@ -43,4 +62,4 @@ interface Camera {
     created_at: string;
 }
 
-export type { Camera, Person, CameraStats, EventStats, PersonStats, EventStatusReport, EventHistory};
+export type { Camera, Person, CameraStats, Event, EventStats, PersonStats, EventStatusReport, EventHistory};

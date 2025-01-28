@@ -13,6 +13,7 @@ import {
     PersonStats,
     EventStatusReport,
     EventHistory,
+    Event,
     Camera
 } from "../../types/models.tsx";
 import {ListResponse, DataResponse} from "../../types/response.tsx";
@@ -91,6 +92,12 @@ export const coreApi = createApi({
             query: ()=>{return {url:'/events/weekHistory'}}
         }),
 
+
+        // get Events
+        getEventList: builder.query<ListResponse<Event>,ListArgs>({
+            query: ({page, page_size})=>({url: `/events?page=${page}&page_size=${page_size}`})
+        }),
+
         // Create New Person
         createPerson: builder.mutation({
             query: ({data})=>(
@@ -159,4 +166,5 @@ export const {
     useGetEventWeekHistoryQuery,
     useGetCameraByPrimeQuery,
     useGetCameraListQuery,
+    useGetEventListQuery
 } = coreApi;
