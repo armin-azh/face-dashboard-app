@@ -17,6 +17,7 @@ import Live from "./Live.tsx";
 import Events from "./Events.tsx";
 import Personal from "./Personal.tsx";
 import Cameras from "./Cameras.tsx";
+import Enrollment from "./Enrollment.tsx";
 
 createRoot(document.getElementById('root')!).render(
     <Provider store={store}>
@@ -27,6 +28,7 @@ createRoot(document.getElementById('root')!).render(
                     <Route path='/personals'>
                         <Route index={true} element={<Personals/>}/>
                         <Route path="personal/:prime" element={<Personal/>}/>
+                        <Route path="personal/:prime/enrollments/enrollment/:enrollmentId" element={<Enrollment/>}/>
                     </Route>
                     <Route path='/cameras'>
                         <Route index={true} element={<Cameras/>}/>

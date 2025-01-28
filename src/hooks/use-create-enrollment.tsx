@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import {useNavigate} from "react-router";
 
 // Hooks
 import {useCreateEnrollmentMutation} from "../store/api/core.tsx";
@@ -11,6 +12,7 @@ import type {PersonEnrollmentCreateForm} from "../types/form.tsx";
 
 
 export default function useCreateEnrollment() {
+    const navigate = useNavigate();
     const [form, setForm] = useState<PersonEnrollmentCreateForm>(initPersonEnrollmentCreateForm);
     const [submit, {isLoading}] = useCreateEnrollmentMutation();
 
@@ -22,7 +24,7 @@ export default function useCreateEnrollment() {
                 if (process.env.NODE_ENV === 'development') {
                     console.log(response);
                 }
-
+                navigate(`/personals/personal/${personId}/enrollments/enrollment/${response.data.prime}`);
                 if (args.onUpdate) {
                     args.onUpdate();
                 }
