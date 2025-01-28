@@ -19,6 +19,10 @@ import {
 import {ListResponse, DataResponse} from "../../types/response.tsx";
 import {ListArgs} from "../../types/args.tsx";
 
+interface CameraArgs extends ListArgs{
+    type: string;
+}
+
 const baseQuery = fetchBaseQuery(
     {
         baseUrl: `http://localhost:8080/api/v1/`,
@@ -50,8 +54,8 @@ export const coreApi = createApi({
         }),
 
         // Camera List
-        getCameraList: builder.query<ListResponse<Camera>,ListArgs>({
-            query: ({page, page_size}) => ({url: `/cameras?page=${page}&page_size=${page_size}`})
+        getCameraList: builder.query<ListResponse<Camera>,CameraArgs>({
+            query: (args) => ({url: `/cameras?page=${args.page}&page_size=${args.page_size}&type=${args.type}`})
         }),
 
         // Get Camera by I'd

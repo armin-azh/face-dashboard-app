@@ -32,10 +32,8 @@ export default function LiveVideo(){
     const [activeIndex, setActiveIndex] = useState(0); // Tracks active camera index for 1x1 grid
     const [sourceType, setSourceType] = useState<string>("hls");
 
-    const {data} = useGetCameraListQuery({page:1, page_size:100});
-
-
-
+    const {data} = useGetCameraListQuery({page:1, page_size:100, type: "entry"});
+    
     const gridOptions = [
         { rows: 1, cols: 1 },
         { rows: 2, cols: 2 },
@@ -53,6 +51,20 @@ export default function LiveVideo(){
     if (!data){
         return <Loading/>
     }
+
+
+    // if there is no camera available
+    if (data.results.length === 0) {
+        return (
+            <div className="flex items-center justify-center h-full col-span-4">
+                <div
+                    className="aspect-w-16 aspect-h-9 w-full  flex items-center justify-center text-gray-500 rounded-md">
+                    There is no camera available
+                </div>
+            </div>
+        );
+    }
+
     return (
         <>
             {/* Camera Streams Section */}

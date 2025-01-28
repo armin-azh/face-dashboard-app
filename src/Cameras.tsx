@@ -25,7 +25,7 @@ export default function Cameras() {
     const [page, setPage] = useState<number>(parseInt(searchParams.get("page") ?? "1", 10));
     const page_size = parseInt(searchParams.get("page_size") ?? "10", 10);
 
-    const {data, refetch, isLoading} = useGetCameraListQuery({page,page_size});
+    const {data, refetch, isLoading} = useGetCameraListQuery({page,page_size, type:'*'});
 
     if (isLoading) {
         return <Loading/>
