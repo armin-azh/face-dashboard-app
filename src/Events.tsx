@@ -17,7 +17,6 @@ export default function Events() {
 
     const {data, isLoading} = useGetEventListQuery({page,page_size});
 
-
     if (isLoading) {
         return <Loading/>
     }
@@ -59,7 +58,7 @@ export default function Events() {
                             {/* Thumbnail Column */}
                             <td className="px-4 py-3 border-b border-gray-200 text-center">
                                 <img
-                                    src="/default-person.jpg"
+                                    src={`${import.meta.env.VITE_API_BASE_URL}/media${item.face_thumbnail}`}
                                     alt="Thumbnail"
                                     className="w-12 h-12 rounded-full object-cover mx-auto"
                                 />
