@@ -8,6 +8,15 @@ interface Person {
     created_at: string
 }
 
+interface Enrollment {
+    id: number;
+    prime:  string;
+    type: string;
+    status: string;
+    person_id: number;
+    created_at: string;
+}
+
 interface Event {
     event_id: number;
     event_prime: number;
@@ -62,4 +71,4 @@ interface Camera {
     created_at: string;
 }
 
-export type { Camera, Person, CameraStats, Event, EventStats, PersonStats, EventStatusReport, EventHistory};
+export type { Camera, Enrollment, Person, CameraStats, Event, EventStats, PersonStats, EventStatusReport, EventHistory};

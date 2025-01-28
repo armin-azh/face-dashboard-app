@@ -14,6 +14,7 @@ import {
     EventStatusReport,
     EventHistory,
     Event,
+    Enrollment,
     Camera
 } from "../../types/models.tsx";
 import {ListResponse, DataResponse} from "../../types/response.tsx";
@@ -70,7 +71,10 @@ export const coreApi = createApi({
             }
         }),
 
-        // Get Camera
+        // Get Enrollment By Prime
+        getEnrollmentByPrime: builder.query<DataResponse<Enrollment>,{enrollmentId: string}>({
+            query:({enrollmentId})=>({url: `/enrollments/enrollment/${enrollmentId}` })
+        }),
 
         // Get Event Stats
         getEventStats: builder.query<DataResponse<EventStats>, void>({
@@ -170,5 +174,6 @@ export const {
     useGetEventWeekHistoryQuery,
     useGetCameraByPrimeQuery,
     useGetCameraListQuery,
-    useGetEventListQuery
+    useGetEventListQuery,
+    useGetEnrollmentByPrimeQuery
 } = coreApi;

@@ -1,4 +1,5 @@
 import {useParams} from "react-router";
+import classNames from "classnames";
 
 // Icons
 import {AiOutlineVideoCamera} from "react-icons/ai";
@@ -15,7 +16,7 @@ interface NewPersonModalProps {
 export default function NewSourceModal({setIsModalOpen}: NewPersonModalProps) {
     const {prime} = useParams(); // Fetch the ID from the route (e.g., /personal/:id)
 
-    const {setForm, create} = useCreateEnrollment();
+    const {setForm, create, form} = useCreateEnrollment();
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -29,7 +30,7 @@ export default function NewSourceModal({setIsModalOpen}: NewPersonModalProps) {
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <label
-                            className="flex flex-col items-center bg-gray-100 p-4 rounded-lg shadow-md hover:bg-gray-200 transition cursor-pointer"
+                            className={classNames("flex flex-col items-center bg-gray-100 p-4 rounded-lg shadow-md hover:bg-gray-200 transition cursor-pointer",{"bg-gray-200": form.type === "recording"})}
                             onClick={() => setForm(prevState => ({...prevState, type: "recording"}))}>
                             <input
                                 type="radio"
@@ -45,7 +46,8 @@ export default function NewSourceModal({setIsModalOpen}: NewPersonModalProps) {
                         </label>
                         <label
                             onClick={() => setForm(prevState => ({...prevState, type: 'video'}))}
-                            className="flex flex-col items-center bg-gray-100 p-4 rounded-lg shadow-md hover:bg-gray-200 transition cursor-pointer">
+                            className={classNames("flex flex-col items-center bg-gray-100 p-4 rounded-lg shadow-md hover:bg-gray-200 transition cursor-pointer",{"bg-gray-200": form.type === "video"})}
+                        >
                             <input
                                 type="radio"
                                 name="dataSource"
@@ -60,7 +62,8 @@ export default function NewSourceModal({setIsModalOpen}: NewPersonModalProps) {
                         </label>
                         <label
                             onClick={() => setForm(prevState => ({...prevState, type: 'image'}))}
-                            className="flex flex-col items-center bg-gray-100 p-4 rounded-lg shadow-md hover:bg-gray-200 transition cursor-pointer">
+                            className={classNames("flex flex-col items-center bg-gray-100 p-4 rounded-lg shadow-md hover:bg-gray-200 transition cursor-pointer",{"bg-gray-200": form.type === "image"})}
+                        >
                             <input
                                 type="radio"
                                 name="dataSource"
@@ -80,7 +83,9 @@ export default function NewSourceModal({setIsModalOpen}: NewPersonModalProps) {
                         type="button"
                         className="px-4 py-2 bg-blue-500 text-gray-100 rounded-lg hover:bg-blue-600 transition font-medium mr-2"
                         onClick={()=>{
-                            create(prime as string,{})
+                            create(prime as string,{
+                                onUpdate: ()=>setIsModalOpen(false)
+                            })
                         }}>
                         Create
                     </button>
