@@ -176,7 +176,25 @@ export const coreApi = createApi({
                 method: 'POST',
                 body: data
             })
+        }),
+
+        // Finalize the enrollment
+        completeEnrollment: builder.mutation({
+            query: ({data,enrollmentId})=>({
+                url: `/enrollments/enrollment/${enrollmentId}/complete`,
+                method: 'POST',
+                body: data
+            })
+        }),
+
+        // process Enrollment
+        processEnrollment: builder.mutation({
+            query:({enrollmentId})=>({
+                url: `/enrollments/enrollment/${enrollmentId}/process`,
+                method: 'GET'
+            })
         })
+
 
 
     })
@@ -192,6 +210,8 @@ export const {
     useStartRecordingMutation,
     useUploadVideoMutation,
     useUploadImagesMutation,
+    useCompleteEnrollmentMutation,
+    useProcessEnrollmentMutation,
 
     // Query
     useListPersonsQuery,

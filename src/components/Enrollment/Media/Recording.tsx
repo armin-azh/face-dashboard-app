@@ -2,14 +2,14 @@
 // Components
 import Loading from "../../Loading.tsx";
 
+// Types
+import type {Props} from "./props.tsx";
+
 // Hooks
 import {useGetCameraListQuery} from "../../../store/api/core.tsx";
 import {useEffect} from "react";
 import {Centrifuge} from "centrifuge";
 
-interface Props {
-    enrollmentId: string;
-}
 export default function Recording(props: Props){
     const {data, isLoading} = useGetCameraListQuery({page:1, page_size:10, type:"recording"});
 
