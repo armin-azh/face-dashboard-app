@@ -6,7 +6,7 @@ export default function Loading(){
             <div className="flex items-center gap-2">
                     <span
                         className="loader animate-spin rounded-full border-4 border-t-blue-500 border-gray-300 w-8 h-8"></span>
-                <span className="text-blue-700 font-semibold">Loading Cameras...</span>
+                <span className="text-blue-700 font-semibold">Loading...</span>
             </div>
         </div>
     )

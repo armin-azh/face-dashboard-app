@@ -15,7 +15,7 @@ import Extraction from "./components/Enrollment/Extraction";
 import Finalize from "./components/Enrollment/Finalize";
 
 export default function Enrollment() {
-    const {prime, enrollmentId} = useParams();
+    const {enrollmentId} = useParams();
     const [step, setStep] = React.useState(1);
 
     const stepLabels = ["Prepare Media", "Review", "Extraction", "Finalize"];
@@ -24,6 +24,7 @@ export default function Enrollment() {
 
     if (isLoading || !data) return <Loading/>;
 
+    const nextStep = ()=>setStep(prevState => prevState + 1);
     return (
         <main className='flex-grow pt-16 bg-gray-50 p-6'>
             <h1 className="text-2xl font-semibold text-blue-700 mb-6">Add Faces</h1>
@@ -42,7 +43,7 @@ export default function Enrollment() {
                             {index + 1}
                         </div>
                         <span
-                            className={`ml-2 text-xs ${
+                            className={`ml-2 text-xs font-semibold${
                                 step === index + 1 ? "text-blue-500" : "text-gray-700"
                             }`}
                         >
@@ -56,9 +57,9 @@ export default function Enrollment() {
             </div>
 
             <div>
-                {step === 1 && (<Media enrollment={data.data} nextStep={()=>setStep(prevState => prevState + 1)}/>)}
-                {step === 2 && (<Preview/>)}
-                {step === 3 && (<Extraction/>)}
+                {step === 1 && (<Media enrollment={data.data} nextStep={nextStep}/>)}
+                {step === 2 && (<Preview enrollmentId={data.data.prime} nextStep={nextStep}/>)}
+                {step === 3 && (<Extraction enrollmentId={data.data.prime} nextStep={nextStep}/>)}
                 {step === 4 && (<Finalize/>)}
             </div>
 

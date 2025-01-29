@@ -154,8 +154,8 @@ export const coreApi = createApi({
 
         // Start Recording
         startRecording: builder.mutation({
-            query: ({enrollmentId})=>({
-                url: `/enrollments/enrollment/${enrollmentId}/recording`,
+            query: ({enrollmentId, camId})=>({
+                url: `/enrollments/enrollment/${enrollmentId}/recording/${camId}`,
                 method: 'GET'
             })
         }),
