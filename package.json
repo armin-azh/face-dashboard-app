@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.0",
+    "centrifuge": "^5.3.1",
     "chart.js": "^4.4.7",
     "classnames": "^2.5.1",
     "hls.js": "^1.5.20",

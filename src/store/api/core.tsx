@@ -150,6 +150,32 @@ export const coreApi = createApi({
                 url: `/cameras/camera/${cameraId}/reload`,
                 method: 'GET'
             })
+        }),
+
+        // Start Recording
+        startRecording: builder.mutation({
+            query: ({enrollmentId})=>({
+                url: `/enrollments/enrollment/${enrollmentId}/recording`,
+                method: 'GET'
+            })
+        }),
+
+        // Upload video for enrollment
+        uploadVideo: builder.mutation({
+            query: ({data, enrollmentId})=>({
+                url: `/enrollments/enrollment/${enrollmentId}/video`,
+                method: 'POST',
+                body: data
+            })
+        }),
+
+        // Upload images for enrollment
+        uploadImages: builder.mutation({
+            query: ({data, enrollmentId})=>({
+                url: `/enrollments/enrollment/${enrollmentId}/images`,
+                method: 'POST',
+                body: data
+            })
         })
 
 
@@ -163,6 +189,9 @@ export const {
     useCreateCameraMutation,
     useDeleteCameraMutation,
     useReloadCameraMutation,
+    useStartRecordingMutation,
+    useUploadVideoMutation,
+    useUploadImagesMutation,
 
     // Query
     useListPersonsQuery,

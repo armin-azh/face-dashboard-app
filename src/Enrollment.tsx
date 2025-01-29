@@ -1,11 +1,17 @@
 import React from "react";
 import {useParams} from "react-router";
 
+
 // Components
 import Loading from "./components/Loading.tsx";
 
 // Hooks
 import {useGetEnrollmentByPrimeQuery} from "./store/api/core.tsx";
+
+// Components
+import Media from "./components/Enrollment/Media";
+
+
 
 export default function Enrollment() {
     const {prime, enrollmentId} = useParams();
@@ -49,10 +55,9 @@ export default function Enrollment() {
                 ))}
             </div>
 
-            <form>
+            <div>
                 {step === 1 && (
-                    <></>
-                    // <SourceType personId={prime as string} nextStep={()=>setStep((prev) => prev + 1)} cancel={()=>setIsModalOpen(false)}/>
+                    <Media enrollment={data.data}/>
                 )}
                 {step === 2 && (
                     <div className="mb-4">
@@ -75,7 +80,7 @@ export default function Enrollment() {
                         <p className="text-gray-700">Review your inputs or perform the final step.</p>
                     </div>
                 )}
-            </form>
+            </div>
 
         </main>
     );

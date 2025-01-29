@@ -74,6 +74,7 @@ export default function Cameras() {
                             </th>
                         </tr>
                     </thead>
+                    <tbody>
                     {data && (
                         data.results.map((item, index)=>(
                             <tr key={nanoid()}
@@ -111,6 +112,7 @@ export default function Cameras() {
                             </tr>
                         ))
                     )}
+                    </tbody>
                 </table>
             </div>
 
@@ -139,7 +141,7 @@ export default function Cameras() {
                             if(data.page < data.total_pages){
                                 setPage(prevState => prevState + 1);
                             }}
-                        } text-sm
+                        }
                     >
                         Next
                     </button>
