@@ -28,10 +28,10 @@ const baseQuery = fetchBaseQuery(
     {
         baseUrl: `http://localhost:8080/api/v1/`,
         credentials: 'include',
-        prepareHeaders: (headers) => {
-            headers.set('Content-Type', 'application/json'); // Add this line
-            return headers;
-        },
+        // prepareHeaders: (headers) => {
+        //     headers.set('Content-Type', 'application/json'); // Add this line
+        //     return headers;
+        // },
 
     }
 )
