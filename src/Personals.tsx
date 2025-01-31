@@ -57,9 +57,6 @@ export default function Personals() {
                             Name
                         </th>
                         <th className="px-6 py-3 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
-                            Number of Faces
-                        </th>
-                        <th className="px-6 py-3 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
                             Created At
                         </th>
                         <th className="px-6 py-3 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
@@ -89,9 +86,6 @@ export default function Personals() {
                                 </td>
                                 <td className="px-6 py-4 border-b border-gray-200 text-gray-800 font-medium text-center capitalize text-sm">
                                     {item.first_name} {item.last_name}
-                                </td>
-                                <td className="px-6 py-4 border-b border-gray-200 text-gray-600 text-center text-sm">
-                                    0
                                 </td>
                                 <td className="px-6 py-4 border-b border-gray-200 text-gray-600 text-center text-sm">
                                     {new Date(item.created_at).toLocaleString()}
