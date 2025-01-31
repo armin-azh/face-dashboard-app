@@ -98,6 +98,15 @@ interface Face {
     session_created_at: string;
 }
 
+interface PersonFace{
+    id: number;
+    prime: string;
+    image: string;
+    thumbnail: string;
+    score: number;
+    indexed: boolean;
+}
+
 export type {
     File,
     Camera,
@@ -109,4 +118,5 @@ export type {
     PersonStats,
     EventStatusReport,
     Face,
+    PersonFace,
     EventHistory};

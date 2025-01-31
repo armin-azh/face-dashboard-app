@@ -17,6 +17,7 @@ import {
     Enrollment,
     Camera,
     File,
+    PersonFace,
     Face
 } from "../../types/models.tsx";
 import {ListResponse, DataResponse} from "../../types/response.tsx";
@@ -24,6 +25,10 @@ import {ListArgs} from "../../types/args.tsx";
 
 interface CameraArgs extends ListArgs{
     type: string;
+}
+
+interface PersonFaceArgs extends ListArgs{
+    personId: string
 }
 
 const baseQuery = fetchBaseQuery(
@@ -45,6 +50,11 @@ export const coreApi = createApi({
     endpoints:builder => ({
         getEnrollmentFileList: builder.query<ListResponse<File>,{enrollmentId:string}>({
             query: ({enrollmentId})=>({url: `/enrollments/enrollment/${enrollmentId}/sessionFiles`})
+        }),
+
+        // Get Person Face lists
+        getPersonFaceList: builder.query<ListResponse<PersonFace>,PersonFaceArgs>({
+            query: (args)=> ({url:  `/persons/person/${args.personId}/faces?page=${args.page}&page_size=${args.page_size}`}),
         }),
 
         listPersons: builder.query<ListResponse<Person>, void>({
@@ -205,8 +215,6 @@ export const coreApi = createApi({
             })
         })
 
-
-
     })
 })
 
@@ -236,5 +244,6 @@ export const {
     useGetEventListQuery,
     useGetEnrollmentByPrimeQuery,
     useGetEnrollmentFileListQuery,
-    useGetFaceListQuery
+    useGetFaceListQuery,
+    useGetPersonFaceListQuery
 } = coreApi;
