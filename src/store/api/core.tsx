@@ -16,7 +16,8 @@ import {
     Event,
     Enrollment,
     Camera,
-    File
+    File,
+    Face
 } from "../../types/models.tsx";
 import {ListResponse, DataResponse} from "../../types/response.tsx";
 import {ListArgs} from "../../types/args.tsx";
@@ -108,6 +109,11 @@ export const coreApi = createApi({
         // get Events
         getEventList: builder.query<ListResponse<Event>,ListArgs>({
             query: ({page, page_size})=>({url: `/events?page=${page}&page_size=${page_size}`})
+        }),
+
+        // Get Extracted FAce List
+        getFaceList: builder.query<ListResponse<Face>,{enrollmentId: string}>({
+            query: ({enrollmentId})=>({url: `/enrollments/enrollment/${enrollmentId}/files`})
         }),
 
         // Create New Person
@@ -229,5 +235,6 @@ export const {
     useGetCameraListQuery,
     useGetEventListQuery,
     useGetEnrollmentByPrimeQuery,
-    useGetEnrollmentFileListQuery
+    useGetEnrollmentFileListQuery,
+    useGetFaceListQuery
 } = coreApi;

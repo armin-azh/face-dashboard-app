@@ -16,9 +16,14 @@ export interface CameraForm{
     on_demand: boolean;
 }
 
+export interface EnrollmentPrimeForm {
+    primes: string[];
+}
+
 export const initPersonForm=()=>({first_name:'',last_name:''});
 
 export const initPersonEnrollmentCreateForm= () =>({'type':''});
 
-
 export const initCameraForm=()=>({name:'',type:'',url:'',on_demand:false});
+
+export const initEnrollmentPrimeForm=()=>({primes:[] as string[]});

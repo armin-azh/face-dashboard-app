@@ -1,5 +1,5 @@
 import React from "react";
-import {useParams} from "react-router";
+import {useParams, useNavigate} from "react-router";
 
 
 // Components
@@ -15,7 +15,8 @@ import Extraction from "./components/Enrollment/Extraction";
 import Finalize from "./components/Enrollment/Finalize";
 
 export default function Enrollment() {
-    const {enrollmentId} = useParams();
+    const {enrollmentId,prime} = useParams();
+    const navigate = useNavigate();
     const [step, setStep] = React.useState(1);
 
     const stepLabels = ["Prepare Media", "Review", "Extraction", "Finalize"];
@@ -25,6 +26,7 @@ export default function Enrollment() {
     if (isLoading || !data) return <Loading/>;
 
     const nextStep = ()=>setStep(prevState => prevState + 1);
+    const goBack = ()=>navigate(`/personals/personal/${prime}`);
     return (
         <main className='flex-grow pt-16 bg-gray-50 p-6'>
             <h1 className="text-2xl font-semibold text-blue-700 mb-6">Add Faces</h1>
@@ -60,7 +62,7 @@ export default function Enrollment() {
                 {step === 1 && (<Media enrollment={data.data} nextStep={nextStep}/>)}
                 {step === 2 && (<Preview enrollmentId={data.data.prime} nextStep={nextStep}/>)}
                 {step === 3 && (<Extraction enrollmentId={data.data.prime} nextStep={nextStep}/>)}
-                {step === 4 && (<Finalize/>)}
+                {step === 4 && (<Finalize enrollmentId={data.data.prime} nextStep={goBack}/>)}
             </div>
 
         </main>

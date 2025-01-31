@@ -78,6 +78,26 @@ interface Camera {
     created_at: string;
 }
 
+interface Face {
+    enrollment_id: number;
+    enrollment_prime: string;
+    session_id: number;
+    face_id: number;
+    enrollment_created_at: string;
+    face_id_2: number;
+    face_prime: string;
+    face_image: string;
+    face_thumbnail: string;
+    face_score: string;
+    face_indexed: boolean;
+    session_id_2: number;
+    session_prime: string;
+    session_type: string;
+    session_status: string;
+    session_person_id: number;
+    session_created_at: string;
+}
+
 export type {
     File,
     Camera,
@@ -88,4 +108,5 @@ export type {
     EventStats,
     PersonStats,
     EventStatusReport,
+    Face,
     EventHistory};
