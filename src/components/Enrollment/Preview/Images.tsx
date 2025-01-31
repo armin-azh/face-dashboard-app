@@ -5,7 +5,7 @@ interface Props {
 }
 
 export default function Images(props: Props){
-
+    console.log(props);
     return (
         <></>
     )

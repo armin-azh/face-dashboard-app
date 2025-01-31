@@ -15,7 +15,8 @@ import {
     EventHistory,
     Event,
     Enrollment,
-    Camera
+    Camera,
+    File
 } from "../../types/models.tsx";
 import {ListResponse, DataResponse} from "../../types/response.tsx";
 import {ListArgs} from "../../types/args.tsx";
@@ -41,6 +42,9 @@ export const coreApi = createApi({
     baseQuery,
     refetchOnReconnect: true,
     endpoints:builder => ({
+        getEnrollmentFileList: builder.query<ListResponse<File>,{enrollmentId:string}>({
+            query: ({enrollmentId})=>({url: `/enrollments/enrollment/${enrollmentId}/sessionFiles`})
+        }),
 
         listPersons: builder.query<ListResponse<Person>, void>({
             query: ()=>{
@@ -224,5 +228,6 @@ export const {
     useGetCameraByPrimeQuery,
     useGetCameraListQuery,
     useGetEventListQuery,
-    useGetEnrollmentByPrimeQuery
+    useGetEnrollmentByPrimeQuery,
+    useGetEnrollmentFileListQuery
 } = coreApi;

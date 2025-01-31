@@ -1,4 +1,11 @@
 
+interface File {
+    id: number;
+    session_id: number;
+    prime: string;
+    path: string;
+    created_at: string;
+}
 
 interface Person {
     id: number;
@@ -71,4 +78,14 @@ interface Camera {
     created_at: string;
 }
 
-export type { Camera, Enrollment, Person, CameraStats, Event, EventStats, PersonStats, EventStatusReport, EventHistory};
+export type {
+    File,
+    Camera,
+    Enrollment,
+    Person,
+    CameraStats,
+    Event,
+    EventStats,
+    PersonStats,
+    EventStatusReport,
+    EventHistory};

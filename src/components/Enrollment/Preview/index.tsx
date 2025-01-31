@@ -14,7 +14,6 @@ interface Props {
 
 
 export default function Preview(props: Props){
-    console.log(props);
     const {data,isLoading, refetch} = useGetEnrollmentByPrimeQuery({enrollmentId: props.enrollmentId});
     
     if(isLoading || !data){
@@ -39,7 +38,7 @@ export default function Preview(props: Props){
     }
 
     if(data.data.type === "video" || data.data.type === "recording"){
-        return <Video enrollmentId={props.enrollmentId}/>
+        return <Video enrollmentId={props.enrollmentId} nextStep={props.nextStep}/>
     }else if(data.data.type === "images"){
         return <Images enrollmentId={props.enrollmentId}/>
     }else{
