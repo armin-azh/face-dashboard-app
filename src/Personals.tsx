@@ -33,7 +33,7 @@ export default function Personals() {
                     <i className="text-xl">
                         <FaUserPlus/>
                     </i>
-                    <span>Add New Person</span>
+                    <span>Add Person</span>
                 </button>
             </div>
 

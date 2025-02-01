@@ -9,6 +9,7 @@ import NewSourceModal from "./components/NewSourceModal";
 import Loading from "./components/Loading.tsx";
 import {FaCircleCheck} from "react-icons/fa6";
 import {GoXCircleFill} from "react-icons/go";
+import BreakCrumb from "./components/BreakCrumb.tsx";
 
 export default function Personal() {
     const [searchParams] = useSearchParams();
@@ -25,6 +26,8 @@ export default function Personal() {
 
     return (
         <main className="flex-grow pt-16 bg-gray-50 p-6">
+            <BreakCrumb header={{to: `/`, name: 'dashboard'}} primary={{to:`/personals`, name: 'personals'}} secondary={`${person.data.first_name} ${person.data.last_name}`}/>
+            
             <header className="mb-6">
                 <h1 className="text-2xl font-semibold text-blue-700">Personal Details</h1>
             </header>
@@ -98,9 +101,11 @@ export default function Personal() {
                                         className="w-16 h-16 rounded-full object-cover mx-auto"
                                     />
                                 </td>
-                                <td className="flex flex-col border-gray-200 text-blue-700 font-medium text-center text-sm items-center justify-center h-full">
-                                    {face.indexed ? <FaCircleCheck className='text-green-500'/> :
-                                        <GoXCircleFill className='text-red-500'/>}
+                                <td className="border-gray-200 text-blue-700 font-medium text-center text-sm h-full">
+                                    <div className="flex items-center justify-center h-full">
+                                        {face.indexed ? <FaCircleCheck className='text-green-500'/> :
+                                            <GoXCircleFill className='text-red-500'/>}
+                                    </div>
                                 </td>
                             </tr>
                         ))}

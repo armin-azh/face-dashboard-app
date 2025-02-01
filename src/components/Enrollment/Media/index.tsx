@@ -16,7 +16,7 @@ export default function Media(props: Props) {
 
     if(props.enrollment.type === "video") {
         return <Video enrollmentId={props.enrollment.prime} nextStep={props.nextStep}/>
-    }else if(props.enrollment.type === "images") {
+    }else if(props.enrollment.type === "image") {
         return <Images enrollmentId={props.enrollment.prime} nextStep={props.nextStep}/>
     }else if(props.enrollment.type === "recording") {
         return <Recording enrollmentId={props.enrollment.prime} nextStep={props.nextStep}/>

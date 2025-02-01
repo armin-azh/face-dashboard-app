@@ -82,12 +82,16 @@ export default function Finalize(props: Props) {
     }
 
     return (
-        <div className="flex flex-col items-center justify-center h-full animate-fade-in">
+        <div className="flex flex-col items-center justify-center h-full animate-fade-in gap-3">
             <div className="p-6 border border-gray-300 rounded-lg bg-white text-center shadow-lg">
-                <p className="mb-3 text-lg font-medium text-gray-700">New has been added successfully.</p>
+                <p className="text-base font-medium text-gray-700">New has been added successfully.</p>
             </div>
-            <FaCheck className='text-green-500'/>
-            <button className='mt-4 duration-300 text-green-600 hover:text-green-700' onClick={() => {
+            <div className="relative flex items-center justify-center w-16 h-16">
+                <div
+                    className="absolute inset-0 animate-spin rounded-full border-4 border-t-transparent border-green-500"></div>
+                <FaCheck className="text-green-500 relative z-10" size={40}/>
+            </div>
+            <button className='mt-4 duration-300 bg-green-600 hover:bg-green-700 text-white p-3 rounded-md' onClick={() => {
                 props.nextStep();
             }}>
                 Continue

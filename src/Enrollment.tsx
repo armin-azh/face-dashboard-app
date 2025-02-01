@@ -19,7 +19,8 @@ export default function Enrollment() {
     const navigate = useNavigate();
     const [step, setStep] = React.useState(1);
 
-    const stepLabels = ["Prepare Media", "Review", "Extraction", "Finalize"];
+    const videoTypeLabels = ["Prepare Media", "Review", "Extraction", "Finalize"];
+    const imageTypeLabels = ["Prepare Media", "Extraction", "Finalize"];
 
     const {data, isLoading} = useGetEnrollmentByPrimeQuery({enrollmentId: enrollmentId as string});
 
@@ -34,36 +35,73 @@ export default function Enrollment() {
 
             {/* Stepper */}
             <div className="flex justify-between items-center mb-6">
-                {stepLabels.map((label, index) => (
-                    <div key={index} className="flex items-center">
-                        <div className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium ${
+                {data.data.type === "image"?(
+                    imageTypeLabels.map((label, index) => (
+                        <div key={index} className="flex items-center">
+                            <div className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium ${
                                 step === index + 1
                                     ? "bg-blue-500 text-white"
                                     : "bg-gray-300 text-gray-700"
                             }`}
-                        >
-                            {index + 1}
-                        </div>
-                        <span
-                            className={`ml-2 text-xs font-semibold${
-                                step === index + 1 ? "text-blue-500" : "text-gray-700"
-                            }`}
-                        >
+                            >
+                                {index + 1}
+                            </div>
+                            <span
+                                className={`ml-2 text-xs font-semibold${
+                                    step === index + 1 ? "text-blue-500" : "text-gray-700"
+                                }`}
+                            >
                                 {label}
                             </span>
-                        {index < stepLabels.length - 1 && (
-                            <div className="flex-1 h-[2px] bg-gray-300 mx-4"></div>
-                        )}
-                    </div>
-                ))}
+                            {index < imageTypeLabels.length - 1 && (
+                                <div className="flex-1 h-[2px] bg-gray-300 mx-4"></div>
+                            )}
+                        </div>
+                    ))
+                ):(
+                    videoTypeLabels.map((label, index) => (
+                        <div key={index} className="flex items-center">
+                            <div className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium ${
+                                step === index + 1
+                                    ? "bg-blue-500 text-white"
+                                    : "bg-gray-300 text-gray-700"
+                            }`}
+                            >
+                                {index + 1}
+                            </div>
+                            <span
+                                className={`ml-2 text-xs font-semibold${
+                                    step === index + 1 ? "text-blue-500" : "text-gray-700"
+                                }`}
+                            >
+                                {label}
+                            </span>
+                            {index < videoTypeLabels.length - 1 && (
+                                <div className="flex-1 h-[2px] bg-gray-300 mx-4"></div>
+                            )}
+                        </div>
+                    ))
+                )}
+
             </div>
 
-            <div>
-                {step === 1 && (<Media enrollment={data.data} nextStep={nextStep}/>)}
-                {step === 2 && (<Preview enrollmentId={data.data.prime} nextStep={nextStep}/>)}
-                {step === 3 && (<Extraction enrollmentId={data.data.prime} nextStep={nextStep}/>)}
-                {step === 4 && (<Finalize enrollmentId={data.data.prime} nextStep={goBack}/>)}
-            </div>
+            {
+                data.data.type === "image"?(
+                    <div>
+                        {step === 1 && (<Media enrollment={data.data} nextStep={nextStep}/>)}
+                        {step === 2 && (<Extraction enrollmentId={data.data.prime} nextStep={nextStep}/>)}
+                        {step === 3 && (<Finalize enrollmentId={data.data.prime} nextStep={goBack}/>)}
+                    </div>
+                ):(
+                    <div>
+                        {step === 1 && (<Media enrollment={data.data} nextStep={nextStep}/>)}
+                        {step === 2 && (<Preview enrollmentId={data.data.prime} nextStep={nextStep}/>)}
+                        {step === 3 && (<Extraction enrollmentId={data.data.prime} nextStep={nextStep}/>)}
+                        {step === 4 && (<Finalize enrollmentId={data.data.prime} nextStep={goBack}/>)}
+                    </div>
+                )
+            }
+
 
         </main>
     );
