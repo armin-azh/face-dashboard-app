@@ -57,9 +57,9 @@ export const coreApi = createApi({
             query: (args)=> ({url:  `/persons/person/${args.personId}/faces?page=${args.page}&page_size=${args.page_size}`}),
         }),
 
-        listPersons: builder.query<ListResponse<Person>, void>({
-            query: ()=>{
-                return {url:'/persons'}
+        listPersons: builder.query<ListResponse<Person>, ListArgs>({
+            query: (args)=>{
+                return {url:`/persons?page=${args.page}&page_size=${args.page_size}`}
             }
         }),
 

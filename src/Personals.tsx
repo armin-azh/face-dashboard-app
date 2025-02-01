@@ -1,6 +1,6 @@
 import {useState} from "react";
 import {FaUserPlus} from "react-icons/fa";
-import {Link} from "react-router";
+import {Link, useSearchParams} from "react-router";
 
 // Component
 import NewPersonModal from "./components/NewPersonModal";
@@ -10,20 +10,15 @@ import Loading from "./components/Loading.tsx";
 import {useListPersonsQuery} from "./store/api/core.tsx";
 
 export default function Personals() {
+    const [searchParams] = useSearchParams();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const {data, isLoading} = useListPersonsQuery();
+    const [page, setPage] = useState<number>(parseInt(searchParams.get("page") ?? "1", 10));
+    const page_size = parseInt(searchParams.get("page_size") ?? "10", 10);
 
+    const {data, isLoading} = useListPersonsQuery({page, page_size});
 
-    const goToPreviousPage = () => {
-
-    };
-
-    const goToNextPage = () => {
-
-    };
-
-    if (isLoading) {
+    if (isLoading || !data) {
         return <Loading/>
     }
 
@@ -106,25 +101,36 @@ export default function Personals() {
             </div>
 
             {/* Pagination Controls */}
-            <div className="mt-6 flex justify-between items-center">
-                <button
-                    className="px-5 py-2 bg-blue-200 text-blue-800 rounded-lg hover:bg-blue-300 disabled:opacity-50 transition font-medium shadow-sm"
-                    // disabled={currentPage === 1}
-                    onClick={goToPreviousPage}
-                >
-                    Previous
-                </button>
-                <span className="text-gray-700 font-semibold text-lg">
-                    Page {0} of {0}
+            {data && data.total_pages !==0 && (
+                <div className="mt-6 flex justify-between items-center">
+                    <button
+                        className="px-5 py-2 bg-blue-200 text-blue-800 rounded-lg hover:bg-blue-300 disabled:opacity-50 transition font-medium shadow-sm text-sm"
+                        disabled={data.page === 1}
+                        onClick={()=>{
+                            if (data.page > 1){
+                                setPage(prevState => prevState - 1);
+                            }
+                        }
+                        }
+                    >
+                        Previous
+                    </button>
+                    <span className="text-gray-700 font-semibold text-sm">
+                    Page {data.page} of {data.total_pages}
                 </span>
-                <button
-                    className="px-5 py-2 bg-blue-200 text-blue-800 rounded-lg hover:bg-blue-300 disabled:opacity-50 transition font-medium shadow-sm"
-                    // disabled={currentPage === totalPages}
-                    onClick={goToNextPage}
-                >
-                    Next
-                </button>
-            </div>
+                    <button
+                        className="px-5 py-2 bg-blue-200 text-blue-800 rounded-lg hover:bg-blue-300 disabled:opacity-50 transition font-medium shadow-sm text-sm"
+                        disabled={data.page === data.total_pages}
+                        onClick={()=>{
+                            if(data.page < data.total_pages){
+                                setPage(prevState => prevState + 1);
+                            }}
+                        }
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
 
             {/* Modal */}
             {isModalOpen && (
