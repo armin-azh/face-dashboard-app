@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import {useSearchParams} from "react-router";
 import {nanoid} from "@reduxjs/toolkit";
 
@@ -16,6 +16,10 @@ export default function Events() {
     const page_size = parseInt(searchParams.get("page_size") ?? "10", 10);
 
     const {data, isLoading} = useGetEventListQuery({page,page_size});
+
+    useEffect(() => {
+        document.title = "KnowMe | Events";
+    }, []);
 
     if (isLoading) {
         return <Loading/>

@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {nanoid} from "@reduxjs/toolkit";
 import {useSearchParams} from "react-router";
 
@@ -15,8 +15,6 @@ import { MdOutlineAddCircle } from "react-icons/md";
 import NewCameraModal from "./components/NewCameraModal";
 import Loading from "./components/Loading";
 
-
-
 export default function Cameras() {
     // Retrieve page and page_size from query params with defaults
     const [searchParams] = useSearchParams();
@@ -26,6 +24,11 @@ export default function Cameras() {
     const page_size = parseInt(searchParams.get("page_size") ?? "10", 10);
 
     const {data, refetch, isLoading} = useGetCameraListQuery({page,page_size, type:'*'});
+
+
+    useEffect(() => {
+        document.title = "KnowMe | Cameras";
+    }, []);
 
     if (isLoading) {
         return <Loading/>

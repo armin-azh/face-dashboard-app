@@ -1,5 +1,5 @@
 import {useParams, useSearchParams} from "react-router";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 // Hooks
 import {usePersonByPrimeQuery, useGetPersonFaceListQuery} from "./store/api/core"; // Update API hooks accordingly
@@ -21,6 +21,10 @@ export default function Personal() {
     // Fetch personal details and associated faces
     const {data: person, isLoading: isPersonLoading} = usePersonByPrimeQuery({prime: prime as string}); // Replace with the appropriate hook
     const {data: faces, isLoading: isFacesLoading} = useGetPersonFaceListQuery({personId: prime as string, page: page, page_size:page_size}); // Replace with the appropriate hook
+
+    useEffect(() => {
+        document.title = "KnowMe | Person";
+    }, []);
 
     if (isPersonLoading || isFacesLoading || !person) {return (<Loading/>)}
 

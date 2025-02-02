@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {FaUserPlus} from "react-icons/fa";
 import {Link, useSearchParams} from "react-router";
 
@@ -17,6 +17,10 @@ export default function Personals() {
     const page_size = parseInt(searchParams.get("page_size") ?? "10", 10);
 
     const {data, isLoading} = useListPersonsQuery({page, page_size});
+
+    useEffect(() => {
+        document.title = "KnowMe | Personals";
+    }, []);
 
     if (isLoading || !data) {
         return <Loading/>

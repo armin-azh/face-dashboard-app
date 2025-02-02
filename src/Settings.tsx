@@ -1,7 +1,11 @@
-
-
+import {useEffect} from "react";
 
 export default function Settings() {
+
+    useEffect(() => {
+        document.title = "KnowMe | Settings";
+    }, []);
+
     return <main className="flex-grow pt-16 bg-gray-100 p-4">
         <h1 className="text-2xl font-bold">Settings Page</h1>
         <p className="mt-2">
