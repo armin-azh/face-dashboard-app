@@ -68,6 +68,9 @@ export default function EventHistory(){
                                 color: '#333',
                             },
                         },
+                        filler: {
+                            propagate: true
+                        },
                     },
                     scales: {
                         x: {
