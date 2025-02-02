@@ -13,6 +13,7 @@ import { GiCctvCamera } from "react-icons/gi";
 
 // Components
 import Notification from "../Notification.tsx";
+import DateTimeDisplay from "../Time.tsx";
 
 export default function DashboardLayout() {
     const location = useLocation();
@@ -123,7 +124,10 @@ export default function DashboardLayout() {
                         ></path>
                     </svg>
                 </button>
-                <Notification/>
+                <div className='flex gap-4'>
+                    <DateTimeDisplay/>
+                    <Notification/>
+                </div>
             </header>
 
             {/* Page Content */}
