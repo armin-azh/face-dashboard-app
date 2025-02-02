@@ -5,6 +5,7 @@ import {Link, useSearchParams} from "react-router";
 // Component
 import NewPersonModal from "./components/NewPersonModal";
 import Loading from "./components/Loading.tsx";
+import BreakCrumb from "./components/BreakCrumb.tsx";
 
 // Hooks
 import {useListPersonsQuery} from "./store/api/core.tsx";
@@ -28,6 +29,7 @@ export default function Personals() {
 
     return (
         <main className="flex-grow pt-16 bg-gray-50 p-6">
+            <BreakCrumb header={{to:'/', name: 'Dashboard'}} primary={"Personals"}/>
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-semibold text-blue-700">Personals Page</h1>
                 <button

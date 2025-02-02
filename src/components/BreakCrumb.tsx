@@ -10,7 +10,7 @@ interface Item {
 
 interface BreakCrumbProps {
     header: Item;
-    primary: Item;
+    primary: Item | string;
     secondary?: string;
 }
 
@@ -29,11 +29,18 @@ export default function BreakCrumb(props: BreakCrumbProps) {
                 <li>
                     <div className="flex items-center">
                         <AiOutlineRight className="w-5 h-5 text-gray-400" size={2}/>
-                        <Link
-                            to={props.primary.to}
-                            className="ml-1 text-sm font-medium text-blue-700 hover:underline capitalize">
-                            {props.primary.name}
-                        </Link>
+                        {(props.primary as Item).to !== undefined ? (
+                            <Link
+                                to={(props.primary as Item).to}
+                                className="ml-1 text-sm font-medium text-blue-700 hover:underline capitalize">
+                                {(props.primary as Item).name}
+                            </Link>
+                        ):(
+                            <span
+                                className="ml-1 text-sm font-medium text-gray-500">
+                                {props.primary as string}
+                            </span>
+                        )}
                     </div>
                 </li>
                 {props.secondary && (

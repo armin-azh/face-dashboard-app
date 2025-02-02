@@ -14,6 +14,7 @@ import { MdOutlineAddCircle } from "react-icons/md";
 // Component
 import NewCameraModal from "./components/NewCameraModal";
 import Loading from "./components/Loading";
+import BreakCrumb from "./components/BreakCrumb";
 
 export default function Cameras() {
     // Retrieve page and page_size from query params with defaults
@@ -36,6 +37,7 @@ export default function Cameras() {
 
     return (
         <main className='flex-grow pt-16 bg-gray-50 p-6'>
+            <BreakCrumb header={{to: '/', name: 'Dashboard'}} primary={'Cameras'}/>
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-semibold text-blue-700">Cameras Page</h1>
                 <button

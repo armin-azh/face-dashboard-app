@@ -4,6 +4,7 @@ import {nanoid} from "@reduxjs/toolkit";
 
 // Components
 import Loading from "./components/Loading.tsx";
+import BreakCrumb from "./components/BreakCrumb.tsx";
 
 // Hooks
 import {useGetEventListQuery} from "./store/api/core.tsx";
@@ -27,6 +28,7 @@ export default function Events() {
 
     return (
         <main className="flex-grow pt-16 bg-gray-50 p-6">
+            <BreakCrumb header={{to: '/', name: 'Dashboard'}} primary={"Events"}/>
             <h1 className="text-2xl font-semibold text-blue-700 mb-6">Events</h1>
 
             {/* Table */}
