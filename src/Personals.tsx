@@ -9,6 +9,7 @@ import BreakCrumb from "./components/BreakCrumb.tsx";
 
 // Hooks
 import {useListPersonsQuery} from "./store/api/core.tsx";
+import Paginator from "./components/Paginator.tsx";
 
 export default function Personals() {
     const [searchParams] = useSearchParams();
@@ -108,34 +109,19 @@ export default function Personals() {
 
             {/* Pagination Controls */}
             {data && data.total_pages !==0 && (
-                <div className="mt-6 flex justify-between items-center">
-                    <button
-                        className="px-5 py-2 bg-blue-200 text-blue-800 rounded-lg hover:bg-blue-300 disabled:opacity-50 transition font-medium shadow-sm text-sm"
-                        disabled={data.page === 1}
-                        onClick={()=>{
-                            if (data.page > 1){
-                                setPage(prevState => prevState - 1);
-                            }
-                        }
-                        }
-                    >
-                        Previous
-                    </button>
-                    <span className="text-gray-700 font-semibold text-sm">
-                    Page {data.page} of {data.total_pages}
-                </span>
-                    <button
-                        className="px-5 py-2 bg-blue-200 text-blue-800 rounded-lg hover:bg-blue-300 disabled:opacity-50 transition font-medium shadow-sm text-sm"
-                        disabled={data.page === data.total_pages}
-                        onClick={()=>{
-                            if(data.page < data.total_pages){
-                                setPage(prevState => prevState + 1);
-                            }}
-                        }
-                    >
-                        Next
-                    </button>
-                </div>
+                <Paginator nextPageDisabled={data.page === data.total_pages}
+                           prevPageDisabled={data.page === 1}
+                           onNextPage={()=>{
+                               if(data.page < data.total_pages){
+                                   setPage(prevState => prevState + 1);
+                               }}}
+                           onPrevPage={()=>{
+                               if (data.page > 1){
+                                   setPage(prevState => prevState - 1);
+                               }
+                           }}
+                           currentPage={data.page}
+                           totalPages={data.total_pages}/>
             )}
 
             {/* Modal */}

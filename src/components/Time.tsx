@@ -14,7 +14,7 @@ const DateTimeDisplay: React.FC = () => {
 
     return (
         <div
-            className="bg-gray-900 text-gray-50 font-medium flex items-center justify-center text-sm rounded shadow-md">
+            className="bg-gray-900 text-gray-50 font-medium flex items-center justify-center text-xs rounded shadow-md">
             {currentDate.toLocaleString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true, second: '2-digit'})}
         </div>
     );
