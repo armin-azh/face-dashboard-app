@@ -11,6 +11,7 @@ import {useGetCameraListQuery} from "../store/api/core.tsx";
 // Components
 import Loading from "./Loading.tsx";
 import HLS from '../components/Video/HLS.tsx';
+import WebRTC from "./Video/WebRTC.tsx";
 
 
 const defaultCameraStreams = [
@@ -125,7 +126,12 @@ export default function LiveVideo(){
                     {/* Render Camera Grid */}
                     {gridSize.rows === 1 && gridSize.cols === 1 ? (
                         <div className="relative bg-gray-300 border rounded-md overflow-hidden">
-                            <HLS sourceId={data.results[activeIndex].prime}/>
+                            {sourceType === 'hls'?(
+                                <HLS sourceId={data.results[activeIndex].prime}/>
+                            ):(
+                                <WebRTC sourceId={data.results[activeIndex].prime}/>
+                            )}
+
                             <div className="absolute top-0 right-0 p-2 bg-black/50 text-white text-xs rounded-bl">
                                 {data.results[activeIndex].name}
                             </div>

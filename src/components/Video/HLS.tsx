@@ -1,4 +1,4 @@
-import React, {useEffect, createRef} from "react";
+import React, {useEffect, createRef, useRef} from "react";
 import Hls from 'hls.js';
 
 interface Props {
@@ -8,6 +8,8 @@ interface Props {
 function HLS(props: Props) {
 
     const videoRef = createRef<HTMLVideoElement>();
+    const hlsInstance = useRef<Hls | null>(null);
+
 
     useEffect(() => {
         const video = videoRef.current;
@@ -17,10 +19,21 @@ function HLS(props: Props) {
 
         if (Hls.isSupported()) {
             const hls = new Hls()
+            hlsInstance.current = hls;
             hls.loadSource(url)
             hls.attachMedia(video)
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
             video.src = url
+        }
+
+        return ()=>{
+            if(hlsInstance.current){
+                if(process.env.NODE_ENV!=='production'){
+                    console.log('[HLS]','destroyed')
+                }
+                hlsInstance.current.destroy();
+                hlsInstance.current = null;
+            }
         }
     }, [videoRef]);
 
