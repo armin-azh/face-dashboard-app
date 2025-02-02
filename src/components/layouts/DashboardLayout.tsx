@@ -9,7 +9,7 @@ import {IoIosSettings} from "react-icons/io";
 import { CgMediaLive } from "react-icons/cg";
 import {BsCalendar2EventFill} from "react-icons/bs";
 import { GiCctvCamera } from "react-icons/gi";
-
+import { HiOutlineMenuAlt3 } from "react-icons/hi";
 
 // Components
 import Notification from "../Notification.tsx";
@@ -33,14 +33,19 @@ export default function DashboardLayout() {
     return <div className="flex h-screen w-screen">
         {/* Sidebar */}
         <div
-            className={classNames('fixed flex flex-col inset-y-0 left-0 bg-gray-800 text-white w-64 transform transition-transform duration-300 ease-in-out z-50', {
+            className={classNames('fixed flex flex-col inset-y-0 left-0 bg-gray-900 text-white w-64 transform transition-transform duration-300 ease-in-out z-50 divide-y divide-gray-800', {
                 'translate-x-0': isSidebarOpen,
                 '-translate-x-full': !isSidebarOpen
             })}
 
         >
 
-            <div className="p-4 text-lg font-bold tracking-widest">KnowMe</div>
+            <div className={'flex gap-1 mt-4 px-2'}>
+                <div className=''>
+                    <img src={'/knowMe.png'} alt={'logo'} className='w-14 h-14'/>
+                </div>
+                <div className="text-lg font-bold tracking-widest text-center flex items-center">KnowMe</div>
+            </div>
             <nav className="mt-4">
                 <ul className='text-sm'>
                     <Link
@@ -108,21 +113,7 @@ export default function DashboardLayout() {
                     className="text-white focus:outline-none"
                     onClick={toggleSidebar}
                 >
-                    {/* Hamburger Icon */}
-                    <svg
-                        className="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M4 6h16M4 12h16m-7 6h7"
-                        ></path>
-                    </svg>
+                    <HiOutlineMenuAlt3 className={'h-6 w-6'}/>
                 </button>
                 <div className='flex gap-4'>
                     <DateTimeDisplay/>
