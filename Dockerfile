@@ -1,38 +1,30 @@
-FROM golang:1.22 AS builder
 
+# Stage 1: Build Stage
+FROM node:18 AS build
+
+# Set the working directory inside the container
 WORKDIR /app
 
-# Install required dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends librdkafka-dev curl
+# Copy package.json and package-lock.json
+COPY package*.json ./
 
-# Cache dependencies
-COPY go.mod go.sum ./
-RUN go mod download
+# Install dependencies
+RUN npm install
 
-# Copy application files
+# Copy the rest of the application code
 COPY . .
 
-RUN CGO_ENABLED=1 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o server src/server.go
-RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz | tar xvz
+# Build the application for production
+RUN npm run build
 
-FROM alpine:3.20
+# Stage 2: Serve with Nginx
+FROM nginx:alpine
 
-WORKDIR /app
+# Copy the built files from the build stage to Nginx serving directory
+COPY --from=build /app/dist /usr/share/nginx/html
 
-COPY --from=builder /app/server .
-COPY --from=builder /app/migrate .
+# Expose port 80
+EXPOSE 80
 
-COPY app.env .
-
-COPY src/db/migrations ./migrations
-
-COPY wait-for .
-
-RUN chmod +x /app/wait-for
-
-EXPOSE 8080
-
-CMD ["/app/server"]
-
-
-
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
