@@ -10,6 +10,7 @@ import { CgMediaLive } from "react-icons/cg";
 import {BsCalendar2EventFill} from "react-icons/bs";
 import { GiCctvCamera } from "react-icons/gi";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
+import { MdOutlineMonitor } from "react-icons/md";
 
 // Components
 import Notification from "../Notification.tsx";
@@ -46,7 +47,7 @@ export default function DashboardLayout() {
                 </div>
                 <div className="text-lg font-bold tracking-widest text-center flex items-center">KnowMe</div>
             </div>
-            <nav className="mt-4">
+            <nav className="my-4">
                 <ul className='text-sm'>
                     <Link
                         to={'/'}
@@ -98,6 +99,17 @@ export default function DashboardLayout() {
                     </Link>
                 </ul>
             </nav>
+
+            <Link
+                to={'#'}
+                onClick={(e) => {
+                    e.preventDefault();
+                    window.open(import.meta.env.VITE_API_STREAM_URL, '_blank', 'noopener,noreferrer');
+                }}
+                className={classNames("flex items-center gap-2 px-4 py-2 hover:bg-gray-700 cursor-pointer mb-2 text-sm")}
+            >
+                <MdOutlineMonitor/> Monitor
+            </Link>
 
             {/* Footer (Version) */}
             <div className="mt-auto p-4 text-center text-xs">
