@@ -18,6 +18,12 @@ function HLS(props: Props) {
         const url = `${import.meta.env.VITE_API_STREAM_URL}/stream/${props.sourceId}/channel/0/hls/live/index.m3u8`
 
         if (Hls.isSupported()) {
+            if (hlsInstance.current) {
+                hlsInstance.current.stopLoad(); // Stop fetching the old stream
+                hlsInstance.current.detachMedia(); // Detach media first
+                hlsInstance.current.destroy(); // Destroy previous instance
+            }
+
             const hls = new Hls()
             hlsInstance.current = hls;
             hls.loadSource(url)
@@ -31,11 +37,13 @@ function HLS(props: Props) {
                 if(process.env.NODE_ENV!=='production'){
                     console.log('[HLS]','destroyed')
                 }
+                hlsInstance.current.stopLoad();
+                hlsInstance.current.detachMedia();
                 hlsInstance.current.destroy();
                 hlsInstance.current = null;
             }
         }
-    }, [videoRef]);
+    }, [props.sourceId]);
 
 
     return <video className='aspect-video w-full h-full' ref={videoRef} autoPlay={true}/>
