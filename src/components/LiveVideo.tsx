@@ -14,27 +14,13 @@ import HLS from '../components/Video/HLS.tsx';
 import WebRTC from "./Video/WebRTC.tsx";
 
 
-const defaultCameraStreams = [
-    "/sample-video1.mp4",
-    "/sample-video2.mp4",
-    "/sample-video3.mp4",
-    "/sample-video4.mp4",
-    "/sample-video5.mp4",
-    "/sample-video6.mp4",
-    "/sample-video7.mp4",
-    "/sample-video8.mp4",
-    "/sample-video9.mp4",
-    "/sample-video10.mp4",
-];
-
 export default function LiveVideo(){
     const [gridSize, setGridSize] = useState({ rows: 1, cols: 1 }); // Default grid size
-    const [cameraStreams] = useState(defaultCameraStreams);
     const [activeIndex, setActiveIndex] = useState(0); // Tracks active camera index for 1x1 grid
     const [sourceType, setSourceType] = useState<string>("hls");
 
     const {data} = useGetCameraListQuery({page:1, page_size:100, type: "entry"});
-    
+
     const gridOptions = [
         { rows: 1, cols: 1 },
         { rows: 2, cols: 2 },
@@ -47,12 +33,20 @@ export default function LiveVideo(){
         setGridSize(size);
     };
 
-    const maxVisibleStreams = gridSize.rows * gridSize.cols;
-
     if (!data){
         return <Loading/>
     }
 
+    // if there is no data source available
+    if (!data.results || data.results.length === 0) {
+        return (
+            <div className="flex items-center justify-center h-full col-span-4">
+                <div className="aspect-w-16 aspect-h-9 w-full flex items-center justify-center text-gray-500 rounded-md">
+                    No source is available
+                </div>
+            </div>
+        );
+    }
 
     // if there is no camera available
     if (data.results.length === 0) {
@@ -155,28 +149,18 @@ export default function LiveVideo(){
                         </div>
                     ) : (
                         // Render Grid view for other sizes
-                        cameraStreams.slice(0, maxVisibleStreams).map((stream, index) => (
-                            <div
-                                key={index}
-                                className="relative bg-gray-300 border rounded-md overflow-hidden"
-                            >
-                                <video
-                                    src={stream}
-                                    className="w-full h-full object-cover"
-                                    autoPlay
-                                    loop
-                                    muted
-                                ></video>
-                                <div className="absolute bottom-1 left-1 bg-black/50 text-white text-xs p-1 rounded">
-                                    Camera {index + 1}
+                        data.results.slice(0, gridSize.rows * gridSize.cols).map((camera, index) => (
+                            <div key={index} className="relative bg-gray-300 border rounded-md overflow-hidden">
+                                {sourceType === 'hls' ? (
+                                    <HLS sourceId={camera.prime}/>
+                                ) : (
+                                    <WebRTC sourceId={camera.prime}/>
+                                )}
+                                <div className="absolute top-0 right-0 p-2 bg-black/50 text-white text-xs rounded-bl">
+                                    {camera.name}
                                 </div>
                             </div>
                         ))
-                    )}
-                    {cameraStreams.length < maxVisibleStreams && gridSize.rows > 1 && (
-                        <div className="col-span-full text-center text-gray-500">
-                            Not enough streams to fill the grid.
-                        </div>
                     )}
                 </div>
             </div>
