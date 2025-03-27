@@ -17,7 +17,7 @@ import WebRTC from "./Video/WebRTC.tsx";
 export default function LiveVideo(){
     const [gridSize, setGridSize] = useState({ rows: 1, cols: 1 }); // Default grid size
     const [activeIndex, setActiveIndex] = useState(0); // Tracks active camera index for 1x1 grid
-    const [sourceType, setSourceType] = useState<string>("hls");
+    const [sourceType, setSourceType] = useState<string>("webrtc");
 
     const {data} = useGetCameraListQuery({page:1, page_size:100, type: "entry"});
 
