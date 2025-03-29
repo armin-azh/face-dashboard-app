@@ -18,7 +18,7 @@ export default function Personals() {
     const [page, setPage] = useState<number>(parseInt(searchParams.get("page") ?? "1", 10));
     const page_size = parseInt(searchParams.get("page_size") ?? "10", 10);
 
-    const {data, isLoading} = useListPersonsQuery({page, page_size});
+    const {data, isLoading, refetch} = useListPersonsQuery({page, page_size});
 
     useEffect(() => {
         document.title = "KnowMe | Personals";
@@ -126,7 +126,7 @@ export default function Personals() {
 
             {/* Modal */}
             {isModalOpen && (
-                <NewPersonModal setIsModalOpen={setIsModalOpen}/>
+                <NewPersonModal setIsModalOpen={setIsModalOpen} refetch={refetch}/>
             )}
         </main>
     );
