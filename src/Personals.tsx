@@ -49,19 +49,19 @@ export default function Personals() {
                 <table className="w-full table-auto border-collapse bg-white shadow-md rounded-lg">
                     <thead className="bg-blue-100">
                     <tr>
-                        <th className="px-6 py-3 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
+                        <th className="px-6 py-2 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
                             Thumbnail
                         </th>
-                        <th className="px-6 py-3 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
+                        <th className="px-6 py-2 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
                             ID
                         </th>
-                        <th className="px-6 py-3 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
+                        <th className="px-6 py-2 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
                             Name
                         </th>
-                        <th className="px-6 py-3 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
+                        <th className="px-6 py-2 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
                             Created At
                         </th>
-                        <th className="px-6 py-3 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
+                        <th className="px-6 py-2 border-b-2 border-blue-300 font-semibold text-center text-blue-700 uppercase text-sm">
                             Actions
                         </th>
                     </tr>
@@ -76,23 +76,31 @@ export default function Personals() {
                                 } hover:bg-blue-50 transition-all`}
                             >
                                 {/* Thumbnail Column */}
-                                <td className="px-6 py-4 border-b border-gray-200 text-center">
+                                <td className="px-6 py-2 border-b border-gray-200 text-center">
                                     <img
                                         src="/default-person.jpg"
                                         alt="Thumbnail"
-                                        className="w-16 h-16 rounded-full object-cover mx-auto shadow-sm"
+                                        className="w-12 h-12 rounded-full object-cover mx-auto shadow-sm"
                                     />
                                 </td>
-                                <td className="px-6 py-4 border-b border-gray-200 text-blue-700 font-medium text-center text-sm">
+                                <td className="px-6 py-2 border-b border-gray-200 text-blue-700 font-medium text-center text-sm">
                                     {item.prime}
                                 </td>
-                                <td className="px-6 py-4 border-b border-gray-200 text-gray-800 font-medium text-center capitalize text-sm">
+                                <td className="px-6 py-2 border-b border-gray-200 text-gray-800 font-medium text-center capitalize text-sm">
                                     {item.first_name} {item.last_name}
                                 </td>
-                                <td className="px-6 py-4 border-b border-gray-200 text-gray-600 text-center text-sm">
-                                    {new Date(item.created_at).toLocaleString()}
+                                <td className="px-6 py-2 border-b border-gray-200 text-gray-600 text-center text-sm">
+                                    {new Date(item.created_at).toLocaleString('en-US', {
+                                        year: 'numeric',
+                                        month: '2-digit',
+                                        day: '2-digit',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        second: '2-digit',
+                                        hour12: true
+                                    }).replace(/(\d+)\/(\d+)\/(\d+),/, '$3-$1-$2')}
                                 </td>
-                                <td className="px-6 py-4 border-b border-gray-200 text-center text-sm">
+                                <td className="px-6 py-2 border-b border-gray-200 text-center text-sm">
                                     <Link
                                         to={`/personals/personal/${item.prime}`}
                                         className="text-blue-600 hover:underline"
