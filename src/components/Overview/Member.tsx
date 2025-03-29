@@ -35,7 +35,7 @@ export default function Member() {
                 <h2 className="text-lg font-semibold text-gray-700">Total Members</h2>
                 <p className="text-3xl font-extrabold text-gray-900">{data.data.total_persons}</p>
             </div>
-            <Link to="/members"
+            <Link to="/personals"
                   className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600 transition-colors">
                 View
             </Link>
