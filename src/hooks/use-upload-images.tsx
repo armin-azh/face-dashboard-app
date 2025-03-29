@@ -1,10 +1,11 @@
 import {useState} from "react";
+import {toast} from "react-toastify";
 
 // Types
 import type {HookArgs} from "../types/args.tsx";
 // Hooks
 import {useUploadImagesMutation} from "../store/api/core.tsx";
-
+import {bottomRightToastOption} from "../utils/ToastOptions.tsx";
 
 export default function useUploadImages(){
     const [form, setForm] = useState<File[]>([]);
@@ -17,6 +18,7 @@ export default function useUploadImages(){
                 data.append('image', file);
             });
             submit({data, enrollmentId})
+                .unwrap()
                 .then((response) => {
                     if(process.env.NODE_ENV === 'development'){
                         console.log(response);
@@ -27,7 +29,23 @@ export default function useUploadImages(){
                 })
                 .catch((error) => {
                     if(process.env.NODE_ENV === 'development'){
-                        console.log(error);
+                        console.log('Upload error:', error);
+                    }
+                    // Check for 413 status code (Payload Too Large)
+                    if (error?.status === 413) {
+                        toast.error('File size is too large. Please upload a smaller file.', bottomRightToastOption);
+                    }
+                    // Check for network connectivity issues
+                    else if (error?.status === 'FETCH_ERROR' || error?.error === 'TypeError: Failed to fetch') {
+                        toast.error('Network connection error. Please check your internet connection and try again.', bottomRightToastOption);
+                    }
+                    // Handle CORS errors
+                    else if (error?.error?.includes('CORS')) {
+                        toast.error('Server connection error. Please try again later.', bottomRightToastOption);
+                    }
+                    // Handle other errors
+                    else {
+                        toast.error('An error occurred while uploading files. Please try again.', bottomRightToastOption);
                     }
                     if(args.onError){
                         args.onError();

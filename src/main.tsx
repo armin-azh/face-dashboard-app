@@ -1,6 +1,8 @@
 import {createRoot} from 'react-dom/client'
 import {BrowserRouter, Route, Routes} from "react-router";
 import './index.css'
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 // Store Redux
 import {Provider} from 'react-redux';
@@ -38,6 +40,7 @@ createRoot(document.getElementById('root')!).render(
                     <Route path='/events' element={<Events/>}/>
                 </Route>
             </Routes>
-        </BrowserRouter>,
+            <ToastContainer />
+        </BrowserRouter>
     </Provider>
 )
