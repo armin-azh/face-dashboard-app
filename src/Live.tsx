@@ -12,12 +12,14 @@ export default function Live() {
     }, []);
 
     return (
-        <main className="flex-grow pt-16 bg-gray-100 p-4 grid grid-cols-5 gap-2">
-            {/* Camera Streams Section */}
-            <LiveVideo/>
+        <main className="flex-grow pt-16 bg-gray-50 p-6 h-screen overflow-hidden">
+            <div className="grid grid-cols-5 gap-2 h-full">
+                {/* Camera Streams Section */}
+                <LiveVideo/>
 
-            {/* Last Events Section */}
-            <LastEvents className='h-full p-0' />
+                {/* Last Events Section */}
+                <LastEvents className='h-full p-0' />
+            </div>
         </main>
     );
 }

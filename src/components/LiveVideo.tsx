@@ -63,7 +63,7 @@ export default function LiveVideo(){
     return (
         <>
             {/* Camera Streams Section */}
-            <div className="col-span-4 bg-white p-4 rounded-lg shadow">
+            <div className="col-span-4 bg-white p-4 rounded-lg shadow h-full flex flex-col">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                         <CiStreamOn className="text-indigo-600"/>
@@ -108,10 +108,9 @@ export default function LiveVideo(){
                             </button>
                         </div>
                     </div>
-
                 </div>
                 <div
-                    className="grid gap-2 overflow-hidden"
+                    className="grid gap-2 overflow-hidden flex-1"
                     style={{
                         gridTemplateRows: `repeat(${gridSize.rows}, 1fr)`,
                         gridTemplateColumns: `repeat(${gridSize.cols}, 1fr)`,

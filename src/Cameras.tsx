@@ -100,12 +100,22 @@ export default function Cameras() {
                                 <td className="px-6 py-4 border-b border-gray-200 text-gray-600 text-center text-sm">
                                     {item.url}
                                 </td>
-                                <td className="px-6 py-4 border-b border-gray-200 text-blue-700 font-medium text-center text-sm flex justify-center items-center">
-                                    {item.on_demand ? <FaCircleCheck className='text-green-500'/> :
-                                        <GoXCircleFill className='text-red-500'/>}
+                                <td className="px-6 py-4 border-b border-gray-200 text-blue-700 font-medium text-center text-sm">
+                                    <div className="flex justify-center items-center">
+                                        {item.on_demand ? <FaCircleCheck className='text-green-500'/> :
+                                            <GoXCircleFill className='text-red-500'/>}
+                                    </div>
                                 </td>
                                 <td className="px-6 py-4 border-b border-gray-200 text-gray-600 text-center text-sm">
-                                    {new Date(item.created_at).toLocaleString()}
+                                {new Date(item.created_at).toLocaleString('en-US', {
+                                        year: 'numeric',
+                                        month: '2-digit',
+                                        day: '2-digit',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        second: '2-digit',
+                                        hour12: true
+                                    }).replace(/(\d+)\/(\d+)\/(\d+),/, '$3-$1-$2')}
                                 </td>
                                 <td className="px-6 py-4 border-b border-gray-200 text-center text-sm">
                                     <Link
